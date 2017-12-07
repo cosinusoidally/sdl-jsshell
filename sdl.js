@@ -1,5 +1,3 @@
-// Note I am currently proofreading this. There will be some typos/
-// grammar errors atm.
 /*
 
     sdl-jsshell simple SDL bindings to the Spidermonkey shell
@@ -25,11 +23,18 @@
 Using jsctypes and SDL to build graphical applications on top of the
 SpiderMonkey Shell.
 
-This allows us to write multimedia applications purely in JS without depending
-on a web browser. jsctypes allows us to call in to C shared libraries from JS,
-eliminating the need to write any wrapper code (jsctypes docs are here:
-https://developer.mozilla.org/en-US/docs/Mozilla/js-ctypes/ unfortunately docs
-are not great).
+This file is the implementation and also comprehensive design documentation. As
+such it contains large blocks of comments. This might be a bit awkward to read
+on GitHub since they choose to display comments in an almost unreadable grey
+font.  If you find it difficult to read you can either go in to your browser
+devtools and set the font colour to black, or you could use the Raw button
+above to view the file as plain text.
+
+This library allows us to write multimedia applications purely in JS, without
+depending on a web browser. jsctypes allows us to call in to C shared libraries
+from JS, eliminating the need to write any wrapper code (jsctypes docs are
+here: https://developer.mozilla.org/en-US/docs/Mozilla/js-ctypes/ unfortunately
+docs are not great).
 
 Spidermonkey is the JavaScript VM from Mozilla Firefox. Mozilla distribute
 a stand alone versions of Spidermonkey for Linux (x86,x86_64), Windows
@@ -519,13 +524,15 @@ uint32_t my_SDL_NewTimerCallback(uint32_t interval,void *param){
   return 0;
 }
 
-Note that the signatures for my_SDL_PushEvent and my_SDL_NewTimerCallback match SDL_PushEvent and SDL_NewTimerCallback respectively
+Note that the signatures for my_SDL_PushEvent and my_SDL_NewTimerCallback match
+SDL_PushEvent and SDL_NewTimerCallback respectively.
 
 We then build the object code as follows:
 
 gcc -fomit-frame-pointer -O2 -c -fno-stack-protector cb.c
 
-Note the -fno-stack-protector flag. That is to prevent gcc from emitting a bunch of unnecessary code
+Note the -fno-stack-protector flag. That is to prevent gcc from emitting a
+bunch of unnecessary code.
 
 We then use objdump to disassemble the function:
 
@@ -547,7 +554,8 @@ Disassembly of section .text:
   19:   48 83 c4 28             add    $0x28,%rsp
   1d:   c3                      retq   
 
-The above also gives us a hex dump of the function. We can convert this to an array and add it to our sdl object
+The above also gives us a hex dump of the function. We can convert this to an
+array and add it to our sdl object.
 */
 
 sdl.cb_bin=[
@@ -583,7 +591,7 @@ sdl.cb_raw=new ArrayBuffer(sdl.cb_bin.length);
   sdl.cb_bin=o;
 })();
 
-// We now need to patch in the address of SDL_PushEvent
+// We now need to patch in the address of SDL_PushEvent.
 
 // First we must get the address of SDL_PushEvent
 
@@ -594,7 +602,8 @@ sdl.address_SDL_PushEvent=ctypes.cast(sdl.SDL_PushEvent,ctypes.uint8_t.array(8))
 //   4:   48 b8 ef be ad de ef    movabs $0xdeadbeefdeadbeef,%rax
 //   b:   be ad de
 
-// The movabs instruction is 2 bytes long in this case. That mean we must patch 8 bytes from offset 6
+// The movabs instruction is 2 bytes long in this case. That mean we must patch
+// 8 bytes from offset 6
 
 (function(){
   for(var i=0;i<8;i++){
@@ -602,7 +611,9 @@ sdl.address_SDL_PushEvent=ctypes.cast(sdl.SDL_PushEvent,ctypes.uint8_t.array(8))
   }
 })();
 
-// Next we need some executable memory in to which we will copy our machine code. We will create this with mmap
+// Next we need some executable memory in to which we will copy our machine
+// code. We will create this with mmap.
+
 // mmap invocation from:
 // http://burnttoys.blogspot.co.uk/2011/04/how-to-allocate-executable-memory-on.html
 
@@ -614,7 +625,8 @@ sdl.address_SDL_PushEvent=ctypes.cast(sdl.SDL_PushEvent,ctypes.uint8_t.array(8))
 //       0,
 //       0);
 
-// We will just allocate 4096 bytes (I think that's the size of a page on Linux).
+// We will allocate 4096 bytes (intended to be the memory page size ... I think
+// that's the size of a page on Linux).
 
 sdl.cb=libc.mmap(                       sdl.voidptr,
                                                4096,
@@ -627,8 +639,23 @@ sdl.cb=libc.mmap(                       sdl.voidptr,
 // Next we copy our machine code in to our sdl.cb buffer.
 libc.memcpy(sdl.cb,sdl.cb_bin,sdl.cb_bin.length);
 
+/*
 
-// Just a dummy version of SDL_AddTimer used during development 
+And that's it. We now have a sdl global that we can use to create a window,
+draw to the screen and listen for mouse events. We are currently missing code
+to handle keyboard events, but that can be added fairly simply.
+
+See test.js for a simple example program using this library.
+
+*/
+
+
+
+//Misc junk:
+//----------
+
+// Just a dummy version of SDL_AddTimer that I used during development.
+
 /*
 sdl.SDL_AddTimer=function(){
   var _=this;
