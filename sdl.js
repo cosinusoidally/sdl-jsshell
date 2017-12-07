@@ -173,7 +173,7 @@ function sdl_init(width,height){
 }
 
 A couple of useful globals:
-running=true; // self explainitory, if it goes false we stop running our program
+running=true; // self explanatory, if it goes false we stop running our program
 
 draw_frame=true; // set to true if we need to draw a frame
 
@@ -209,6 +209,8 @@ function sdl_mainloop(surface){ // takes the surface from init_sdl
       process_event(); 
     };
     if(draw_frame){
+      SDL_AddTimer(frame_interval,...); // schedule another frame event callback
+                                        // in frame_interval ms
       if(render()){ // only actually flip buffers if we have painted a frame
         SDL_Flip(surface); 
       }
@@ -244,8 +246,6 @@ function process_event(){
   if(type===SDL_USEREVENT){ // This will be the event type of our timer (we
 			    // will SDL_PushEvent an event of this type from
 			    // our timer callback).
-    SDL_AddTimer(frame_interval,...); // schedule another frame event callback
-                                      // in frame_interval ms
    draw_frame=true; 
   }
 }
@@ -465,6 +465,9 @@ sdl.sdl_mainloop=function(){
       _.process_event(); 
     };
     if(_.draw_frame){
+      sdl.SDL_AddTimer(_.frame_interval,_.cb,_.voidptr); // schedule another
+                                                         // frame event callback
+                                                         // in frame_interval ms
       if(_.render(_)){ // only actually flip buffers if we have painted a frame
         libc.memcpy(_.cpixels,_.pixels_raw,_.pixels.length);
         _.SDL_Flip(_.surface); 
@@ -497,11 +500,6 @@ sdl.process_event=function(){
   if(type===_.SDL_USEREVENT){ 
     // This will be the event type of our timer (we will SDL_PushEvent an event
     // of this type from our timer callback).
-    // SDL_AddTimer(frame_interval,...); // schedule another frame event callback
-    // in frame_interval ms
-    sdl.SDL_AddTimer(_.frame_interval,_.cb,_.voidptr); // schedule another
-                                                       // frame event callback
-                                                       // in frame_interval ms
    _.draw_frame=true; 
   }
 
