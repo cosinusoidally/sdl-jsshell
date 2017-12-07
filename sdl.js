@@ -420,7 +420,10 @@ sdl.cb=ctypes.voidptr_t(0); // This is a callback to pass in to SDL_AddTimer.
 
 sdl.sdl_init=function(width,height,init,render){
   var _=this;
-  _.frame_interval=10;
+  _.frame_interval=17; // aim for approx 60 frames per second.
+                       // Annoyingly the interval SDL_AddTimer takes is an
+                       // integer number of ms which means you cannot
+                       // represent 1000/60 (16.6666....). 
   _.width=width;
   _.height=height;
   _.running=true;
@@ -481,9 +484,14 @@ sdl.process_event=function(){
   if(type===_.SDL_MOUSEBUTTONUP){
     _.onmouseup(); // user event handler
   }
-  if(type===_.SDL_USEREVENT){ // This will be the event type of our timer (we will SDL_PushEvent an event of this type from our timer callback).
-//    SDL_AddTimer(frame_interval,...); // schedule another frame event callback in frame_interval ms
-    sdl.SDL_AddTimer(_.frame_interval,_.cb,_.voidptr); // schedule another frame event callback in frame_interval ms
+  if(type===_.SDL_USEREVENT){ 
+    // This will be the event type of our timer (we will SDL_PushEvent an event
+    // of this type from our timer callback).
+    // SDL_AddTimer(frame_interval,...); // schedule another frame event callback
+    // in frame_interval ms
+    sdl.SDL_AddTimer(_.frame_interval,_.cb,_.voidptr); // schedule another
+                                                       // frame event callback
+                                                       // in frame_interval ms
    _.draw_frame=true; 
   }
 
@@ -492,7 +500,10 @@ sdl.process_event=function(){
 
 /*
 
-In _.cb we must store a pointer to a function to be called by SDL_AddTimer whenever a timer fires. _.cb will be the location of an executable mmapped buffer. We must fill that buffer with the required machine code. To do this we will create and disassemble a C function:
+In _.cb we must store a pointer to a function to be called by SDL_AddTimer
+whenever a timer fires. _.cb will be the location of an executable mmapped
+buffer. We must fill that buffer with the required machine code. To do this we
+will create and disassemble a C function:
 
 #include <stdint.h>
 
@@ -502,7 +513,9 @@ typedef int (*my_SDL_PushEvent)(char *);
 uint32_t my_SDL_NewTimerCallback(uint32_t interval,void *param){
   char a[24];
   a[0]=24;
-  ((my_SDL_PushEvent)0xdeadbeefdeadbeef)(a); // This is the absolute address SDL_PushEvent, we need to patch in this value at runtime.
+  // This is the absolute address SDL_PushEvent, we need to patch in this value
+  // at runtime.
+  ((my_SDL_PushEvent)0xdeadbeefdeadbeef)(a); 
   return 0;
 }
 
