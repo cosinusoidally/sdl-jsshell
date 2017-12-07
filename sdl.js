@@ -28,7 +28,9 @@ such it contains large blocks of comments. This might be a bit awkward to read
 on GitHub since they choose to display comments in an almost unreadable grey
 font.  If you find it difficult to read you can either go in to your browser
 devtools and set the font colour to black, or you could use the Raw button
-above to view the file as plain text.
+above to view the file as plain text (but using the Raw button may mean you end
+up with a stale version of the file due to browser caching, maybe just git
+clone and view in your own text editor :) ).
 
 This library allows us to write multimedia applications purely in JS, without
 depending on a web browser. jsctypes allows us to call in to C shared libraries
