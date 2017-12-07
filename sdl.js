@@ -152,26 +152,41 @@ In pseudo code our structure will be something like this
 * bind relevant functions to js *
 
 
-We first set up SDL. This involes running it's init function 
+We first set up SDL. This involes running it's init function (SDL_Init), and
+creating an on-screen window  with SDL_SetVideoMode
+
 function sdl_init(width,height){
   SDL_Init(SDL_INIT_EVERYTHING);
   return SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE); // 32 is the bits per pixel. We just hard code this. SDL_SWSURFACE creates us a software surface
 }
 
 A couple of useful globals:
-running=true; // self explainitory, if it goes false we stopp running our program
+running=true; // self explainitory, if it goes false we stop running our program
 
 draw_frame=true; // set to true if we need to draw a frame
 
-event_raw=new ArrayBuffer(24); // this is where the raw event data is written to. It is 24 bytes long on Linux x86_64
+event_raw=new ArrayBuffer(24); // this is where the raw event data is written
+                               // to. It is 24 bytes long on Linux x86_64
 
-event=new Uint8Array(event_raw); // this is an Uint8Array view onto the raw event data. We can then decode the bytes our self
+event=new Uint8Array(event_raw); // this is an Uint8Array view onto the raw
+				 // event data. We can then decode the bytes
+				 // our self
 
-frame_interval=50; How frequently we will attempt to draw frames (in ms). In this case we will do 50ms, which will give us a target of 20Hz
+frame_interval=50; // How frequently we will attempt to draw frames (in ms). In
+		   // this case we will do 50ms, which will give us a target of
+		   // 20Hz
 
-This is our main loop. Note that we use both SDL_WaitEvent and SDL_PollEvent. SDL_WaitEvent blocks until an event comes in. This allows us to yield to the event loop and idle until we need to actually do work. This saves wasting CPU time. When we wake up we then need to drain the event queue and dispatch all events to the relevant event listeners. The while loop containing SDL_PollEvent is used to drain the event queue. SDL_PollEvent will return false (or whatever the numerical equivalent is) once the queue has been drained. process_event will be used to process the events. 
-
-If running we will quit stop looping and call SDL_Quit to cleanly shut down SDL.
+This is our main loop. Note that we use both SDL_WaitEvent and SDL_PollEvent.
+SDL_WaitEvent blocks until an event comes in. This allows us to yield to the
+event loop and idle until we need to actually do work. This saves wasting CPU
+time. When we wake up we then need to drain the event queue and dispatch all
+events to the relevant event listeners. The while loop containing SDL_PollEvent
+is used to drain the event queue. SDL_PollEvent will return false (or whatever
+the numerical equivalent is) once the queue has been drained. process_event
+will be used to process the events. The user provided render function will
+actually paint our frame. The render function will only be triggered if
+draw_frame is true (which is set when the frame timer has fired). If running is
+set to false we will stop looping and call SDL_Quit to cleanly shut down SDL.
  
 function sdl_mainloop(surface){ // takes the surface from init_sdl 
   SDL_AddTimer(frame_interval,...); // schedule first frame to be drawn 
@@ -182,7 +197,7 @@ function sdl_mainloop(surface){ // takes the surface from init_sdl
       process_event(); 
     };
     if(draw_frame){
-      if(render(surface)){ // only actually flip buffers if we have painted a frame
+      if(render()){ // only actually flip buffers if we have painted a frame
         SDL_Flip(surface); 
       }
       draw_frame=false; // reset draw_frame
@@ -192,7 +207,10 @@ function sdl_mainloop(surface){ // takes the surface from init_sdl
 }
 
 
-Our process_event function processes events. See definition of SDL_Event here https://www.libsdl.org/release/SDL-1.2.15/docs/html/sdlevent.html . SDL_Event is a union type of all SDL events. First byte indicates the event type, the rest is event specific data.
+Our process_event function processes events. See definition of SDL_Event here
+https://www.libsdl.org/release/SDL-1.2.15/docs/html/sdlevent.html . SDL_Event
+is a union type of all SDL events. First byte indicates the event type, the
+rest is event specific data.
 
 function process_event(){
   var type=event[0]; // recall event is a Uint8Array view on to event_raw.
@@ -201,8 +219,8 @@ function process_event(){
     running=false;
   };
   if(type===SDL_MOUSEMOTION){
-    var mx=event[4]+(event[5]<<8); // pluck out the 16 bit x value
-    var my=event[6]+(event[7]<<8); // pluck out the 16 bit y value
+    var mx=event[4]+(event[5]<<8); // pluck out the 16 bit absolute x value
+    var my=event[6]+(event[7]<<8); // pluck out the 16 bit absolute y value
     onmousemove(mx,my); // trigger the onmousemove handler provided by the user
   };
   if(type===SDL_MOUSEBUTTONDOWN){
@@ -211,8 +229,11 @@ function process_event(){
   if(type===SDL_MOUSEBUTTONUP){
     onmouseup(); // user event handler
   }
-  if(type===SDL_USEREVENT){ // This will be the event type of our timer (we will SDL_PushEvent an event of this type from our timer callback).
-    SDL_AddTimer(frame_interval,...); // schedule another frame event callback in frame_interval ms
+  if(type===SDL_USEREVENT){ // This will be the event type of our timer (we
+			    // will SDL_PushEvent an event of this type from
+			    // our timer callback).
+    SDL_AddTimer(frame_interval,...); // schedule another frame event callback
+                                      // in frame_interval ms
    draw_frame=true; 
   }
 }
@@ -222,20 +243,38 @@ Our render function will paint to the back buffer:
 function render(surface){
 ... do some rendering ...
   libc.memcpy(surface.pixels,...); // copy our pixel data into surface.pixels
+				   // Note that in the real implementation the
+				   // memcpy is actually in the mainloop
   return true; // tell the mainloop to flip the buffers
 }
 
-Now I have glossed over some details above. The main one is to do with SDL_AddTimer. The SDL_AddTimer function takes 3 arguments:
+Now I have glossed over some details above. The main one is to do with
+SDL_AddTimer. The SDL_AddTimer function takes 3 arguments:
 
 SDL_TimerID SDL_AddTimer(Uint32 interval, SDL_NewTimerCallback callback, void *param);
 
-The callback argument is a pointer to a function. We can define callbacks using jsctypes, but in this case it will not work. The callback will be called from a different thread. According to the jsctypes docs (https://developer.mozilla.org/en-US/docs/Mozilla/js-ctypes/Using_js-ctypes/Declaring_and_Using_Callbacks) we are not allowed to call in to JS from a different thread. If we do that we will crash (or corrupt memory or other bad things). This leaves us with a few options:
+The callback argument is a pointer to a function. We can define callbacks using
+jsctypes, but in this case it will not work. The callback will be called from a
+different thread. According to the jsctypes docs
+(https://developer.mozilla.org/en-US/docs/Mozilla/js-ctypes/Using_js-ctypes/Declaring_and_Using_Callbacks)
+we are not allowed to define jsctypes callbacks that call in to JS from a
+different thread. If we do that we will crash (or corrupt memory or other bad
+things). This leaves us with a few options:
 
-* write the callback in C, build it as a shared library and use jsctypes to load it. When the callback is called it would use SDL_PushEvent to add a event to the event queue to indicate that the timer event has fired.
+* Write the callback in C, build it as a shared library and use jsctypes to
+  load it. When the callback is called it would use SDL_PushEvent to add a
+  event to the event queue to indicate that the timer event has fired.
 
-The disadvantage to this approach is that we would require a C compiler to be installed (or we would need to ship a shared library binary). Ideally I would like to avoid such a dependency.
+  The disadvantage to this approach is that we would require a C compiler to be
+  installed (or we would need to ship a shared library binary). Ideally I would
+  like to avoid such a dependency.
 
-* Somehow generate some x86_64 machine code at runtime and call it from jsctypes. The generated machine code would need to call SDL_PushEvent to put the time event into the event queue.
+* Somehow generate some x86_64 machine code at runtime and call it from
+  jsctypes. The generated machine code would need to call SDL_PushEvent to put
+  the time event into the event queue.
+
+  The disadvantage to this approach is that we will require platform specific
+  machine code.
 
 There are other options, but the above were the ones I considered. I decided to take the runtime machine code generation option. To do this I mmap some executable memory, generate some machine code into that memory, and then call in to that memory using jsctypes. Exact implementation details are further down this document.
 
