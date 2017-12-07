@@ -1,3 +1,5 @@
+// Note I am currently proofreading this. There will be some typos/
+// grammar errors atm.
 /*
 
     sdl-jsshell simple SDL bindings to the Spidermonkey shell
