@@ -22,24 +22,52 @@
 
 */
 /*
-Using jsctypes and SDL to build graphical applications on top of the SpiderMonkey Shell.
+Using jsctypes and SDL to build graphical applications on top of the
+SpiderMonkey Shell.
 
-This allows us to write multimedia applications purely in JS without depending on a web browser. jsctypes allows it to call in to C shared libraries from JS eliminating the need to write any wrapper code (jsctypes docs are here: https://developer.mozilla.org/en-US/docs/Mozilla/js-ctypes/ unfortunately they are not great).
+This allows us to write multimedia applications purely in JS without depending
+on a web browser. jsctypes allows us to call in to C shared libraries from JS,
+eliminating the need to write any wrapper code (jsctypes docs are here:
+https://developer.mozilla.org/en-US/docs/Mozilla/js-ctypes/ unfortunately docs
+are not great).
 
-Spidermonkey is the JavaScript VM from Mozilla Firefox. Mozilla distribute stand alone versions of Spidermonkey for Linux (x86,x86_64), Windows (x86,x86_64) and Mac OS (x86_64). Mozilla call this shell build jsshell.
+Spidermonkey is the JavaScript VM from Mozilla Firefox. Mozilla distribute
+a stand alone versions of Spidermonkey for Linux (x86,x86_64), Windows
+(x86,x86_64) and Mac OS (x86_64). Mozilla call this shell build jsshell.
 
-jsshell is available from https://archive.mozilla.org/pub/firefox/releases/ for for all releases beyond 58.0b4 (since https://bugzilla.mozilla.org/show_bug.cgi?id=1336514 was fixed). Earlier versions are also available from https://archive.mozilla.org/pub/firefox/candidates/ (but note that the candidate builds are only available for a fixed amount of time, iirc 18 months).
+jsshell is available from https://archive.mozilla.org/pub/firefox/releases/ for
+all releases beyond 58.0b4 (since
+https://bugzilla.mozilla.org/show_bug.cgi?id=1336514 was fixed). Earlier
+versions are also available from
+https://archive.mozilla.org/pub/firefox/candidates/ (but note that the
+candidate builds are only available for a fixed amount of time, iirc 18
+months).
 
-release/ builds live in jsshell/ and can be verified using SHA512SUMS and SHA512SUMS.asc
+release/ builds live in jsshell/ and can be verified using SHA512SUMS and
+SHA512SUMS.asc
 
-candidate/ builds live in . and can be verified using the relevant en-US firefox*.checksums and firefox*.checksums.asc files. Later candidate builds are actually copies of the release builds (if you get the right one).
+candidate/ builds live in . and can be verified using the relevant en-US
+firefox*.checksums and firefox*.checksums.asc files. Later candidate builds are
+actually copies of the release builds (if you get the right one).
 
-Note that with the candidate builds Mozilla messed up and stopped providing signatures at around the time of 45.8.0esr. You can still get the later versions. This will only really affect you if you want to mirror the binaries on your own hosting (since users cannot verify the authenticity without the signature files). I'll probably mirror the 45.8.0esr binaries and signatures on Github before they disappear. This problem will go away once the release/ builds of jsshell are available for a stable release of Firefox (they are only currently there for the beta of FF  58)
+Note that with the candidate builds Mozilla messed up and stopped providing
+signatures at around the time of 45.8.0esr. You can still get the later
+versions. This will only really affect you if you want to mirror the binaries
+on your own hosting (since users cannot verify the authenticity without the
+signature files). I'll probably mirror the 45.8.0esr binaries and signatures on
+Github before they disappear. This problem will go away once the release/
+builds of jsshell are available for a stable release of Firefox (they are only
+currently there for the beta of FF 58 and later releases).
 
 Setting Up
 ----------
 
-This was written and tested on a x86_64 Ubuntu 14.04 system (but it should work on any x86_64 Linux distro with SDL 1.2 from CentOS 6 up). The below code makes assumptions about being on an x86_64 Linux system (specifically struct alignment, calling convention, etc). It probably will not work anywhere else. It could be ported though. 
+This was written and tested on a x86_64 Ubuntu 14.04 system (but it should work
+on any x86_64 Linux distro with SDL 1.2 from CentOS 6 up). The below code makes
+assumptions about being on an x86_64 Linux system (specifically struct
+alignment, calling convention, etc). It probably will not work anywhere else.
+It could be ported though. I do plan to get a win32 version going, but I
+haven't ported it yet. 
 
 Getting jsshell
 ---------------
@@ -89,16 +117,33 @@ JavaScript-C45.8.0
 Getting SDL 1.2
 ---------------
 
-I'm using SDL 1.2. This is because it is available as a part of every current Linux distro. It also supports software rendering which is important for Linux distros (far to many buggy OpenGL drivers).
+I'm using SDL 1.2. This is because it is available as a part of every current
+Linux distro. It also supports software rendering which is important for Linux
+distros (far to many buggy OpenGL drivers). I may eventually also add a SDL 2
+bindings which could be dynamically selected at initialisation time.
 
-apt-get install libsdl1.2debian (probably also handy to get libsdl1.2-dev just in case you need to write any SDL C code to figure out structure sizes, field offsets, etc).
+apt-get install libsdl1.2debian 
 
-Documentation is here https://www.libsdl.org/release/SDL-1.2.15/docs/ . They are very good. We will be referring to these a lot.
+It is also handy to get libsdl1.2-dev just in case you need to write any SDL C
+code to figure out structure sizes, field offsets, etc (only useful if you are
+doing dev work on this code itself).
+
+Documentation is here https://www.libsdl.org/release/SDL-1.2.15/docs/ . The
+docs are very good. We will be referring to these a lot.
 
 General structure
 -----------------
 
-First we must put a window on the screen (details lower down). After this is done we sit in a loop and wait for things to happen. SDL has the concept of an event loop. Event include mouse movement, keystrokes, and timer events. Generated events go in to an event queue which we consume. We sit in a loop waiting for events and responding accordingly. We must also periodically draw a frame. We will use a periodic timer to trigger the drawing of a frame. This timer will be generated by SDL and fed into the event queue (since jsshell does not have setInterval or setTimout, it does have Date.now, but we would need to poll to measure time which is inefficient).
+First we must put a window on the screen (details lower down). After this is
+done we sit in a loop and wait for things to happen. SDL has the concept of an
+event loop. Events include mouse movement, keystrokes, and timer events.
+Generated events go in to an event queue which we consume. We sit in a loop
+waiting for events and responding accordingly. We must also periodically draw a
+frame. We will use a periodic timer to trigger the drawing of a frame. These
+timer events will be generated by SDL and fed into the event queue (since
+jsshell does not have setInterval or setTimout (it does have Date.now, but that
+means we would need to poll to measure time, which is inefficient (yes I know
+nested parentheticals in writing are bad))).
 
 
 In pseudo code our structure will be something like this
