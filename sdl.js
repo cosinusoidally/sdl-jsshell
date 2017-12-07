@@ -60,9 +60,9 @@ signatures at around the time of 45.8.0esr. You can still get the later
 versions. This will only really affect you if you want to mirror the binaries
 on your own hosting (since users cannot verify the authenticity without the
 signature files). I'll probably mirror the 45.8.0esr binaries and signatures on
-Github before they disappear. This problem will go away once the release/
+GitHub before they disappear. This problem will go away once the release/
 builds of jsshell are available for a stable release of Firefox (they are only
-currently there for the beta of FF 58 and later releases).
+currently there for FF 58, which is still in beta).
 
 Setting Up
 ----------
@@ -73,6 +73,9 @@ assumptions about being on an x86_64 Linux system (specifically struct
 alignment, calling convention, etc). It probably will not work anywhere else.
 It could be ported though. I do plan to get a win32 version going, but I
 haven't ported it yet. 
+
+This code should work on pretty much any version of jsshell, but the version I
+have used is 45.8.0 .
 
 Getting jsshell
 ---------------
