@@ -127,8 +127,8 @@ Getting SDL 1.2
 
 I'm using SDL 1.2. This is because it is available as a part of every current
 Linux distro. It also supports software rendering which is important for Linux
-distros (far to many buggy OpenGL drivers). I may eventually also add a SDL 2
-bindings which could be dynamically selected at initialisation time.
+distros (far too many buggy OpenGL drivers). I may eventually also add SDL 2
+bindings which could be dynamically loaded at initialisation time.
 
 apt-get install libsdl1.2debian 
 
