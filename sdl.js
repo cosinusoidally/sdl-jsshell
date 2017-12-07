@@ -157,7 +157,9 @@ creating an on-screen window  with SDL_SetVideoMode
 
 function sdl_init(width,height){
   SDL_Init(SDL_INIT_EVERYTHING);
-  return SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE); // 32 is the bits per pixel. We just hard code this. SDL_SWSURFACE creates us a software surface
+  // 32 is the bits per pixel. We just hard code this. SDL_SWSURFACE creates us
+  // a software surface
+  return SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE);
 }
 
 A couple of useful globals:
@@ -276,19 +278,24 @@ things). This leaves us with a few options:
   The disadvantage to this approach is that we will require platform specific
   machine code.
 
-There are other options, but the above were the ones I considered. I decided to take the runtime machine code generation option. To do this I mmap some executable memory, generate some machine code into that memory, and then call in to that memory using jsctypes. Exact implementation details are further down this document.
+There are other options, but the above were the ones I considered. I decided to
+take the runtime machine code generation option. To do this I mmap some
+executable memory, generate some machine code into that memory, and then call
+in to that memory using jsctypes. Exact implementation details are further down
+this document.
 
 
 The implementation
 ------------------
 From this point onwards I will intermingle code and commentary.
 
-First we must load the SDL library and define the required functions. We will also need to load libc (for memcpy and mmap).
+First we must load the SDL library and define the required functions. We will
+also need to load libc (for memcpy and mmap).
 */
 sdl={};
 libc={};
 
-// we will load the library into the .lib field of sdl and libc 
+// we will load the libraries into the .lib field of sdl and libc 
 sdl.lib=ctypes.open("libSDL-1.2.so.0");
 libc.lib = ctypes.open("libc.so.6");
 
@@ -309,7 +316,9 @@ libc.mmap=libc.lib.declare("mmap",ctypes.default_abi, ctypes.voidptr_t,ctypes.vo
 
 // Declare required SDL functions and constants:
 
-// Note I don't implement all the fields from SDL_Surface. I only really care about w, h, and *pixels
+// Note I don't implement all the fields from SDL_Surface. I only really care
+// about w, h, and *pixels (so I only implement the fields up to and including
+// pixels)
 sdl.SDL_Surface=new ctypes.StructType("SDL_Surface",
 //typedef struct SDL_Surface {
 //        Uint32 flags;                            Read-only 
@@ -334,11 +343,12 @@ sdl.SDL_Surface=new ctypes.StructType("SDL_Surface",
 //} SDL_Surface;
                                   ]);
 
-// SDL_Init flags
+// SDL_Init flags. These are to initialise subsystems. Later on I just init
+// eveything (SDL_INIT_EVERYTHING).
 sdl.SDL_INIT_VIDEO=32;
 sdl.SDL_INIT_EVERYTHING=65535;
 
-// video mode flags
+// video mode flags. SDL_SWSURFACE gives us a software surface.
 sdl.SDL_SWSURFACE=0;
 
 // event enums
@@ -378,25 +388,34 @@ sdl.SDL_WaitEvent=sdl.lib.declare("SDL_WaitEvent", ctypes.default_abi, ctypes.in
 
 /*
 
-At this point I am ready to start implementing my "sdl_init" function and my "sdl_mainloop". To avoid polluting the global namespace I should attach them to an object. The sensible object to attach them to would be the sdl object itself.
-
+At this point I am ready to start implementing my "sdl_init" function and my
+"sdl_mainloop". To avoid polluting the global namespace I should attach them to
+an object. The sensible object to attach them to would be the sdl object
+itself.
 
 sdl.sdl_init=function(width,height,init,render) (Implementation below)
 
-The init function will be installed on the sdl object and then run. This init function can set up callbacks for mouse movement and button presses (by adding onmousemove, etc to this object).
+The init function will be installed on the sdl object and then run. This init
+function can set up callbacks for mouse movement and button presses (by adding
+onmousemove, etc to this object).
 
-The render function will be installed on the sdl object and called every time a frame is required.
+The render function will be installed on the sdl object and called every time a
+frame is required.
 
 */
 
-sdl._init=function(){print("Init called")}; // this is a callback defined by your app
-sdl.render=function(){print("render called")}; // this is the render callback defined by your app.
+sdl._init=function(){print("Init called")}; // this the init callback defined by
+                                            // your app 
+sdl.render=function(){print("render called")}; // this is the render
+                                               // callback defined by
+                                               // your app.
 sdl.onmousemove=function(mx,my){print("mousemove:"+mx+","+my)};
 sdl.onmousedown=function(){print("mousedown")};
 sdl.onmouseup=function(mx,my){print("mouseup")};
 
 sdl.voidptr=ctypes.voidptr_t(0); // null pointer, just handy to have
-sdl.cb=ctypes.voidptr_t(0); // This is a callback to pass in to SDL_AddTimer. Here we set it initially to a null pointer
+sdl.cb=ctypes.voidptr_t(0); // This is a callback to pass in to SDL_AddTimer.
+                            // Here we set it initially to a null pointer
 
 
 sdl.sdl_init=function(width,height,init,render){
@@ -413,10 +432,13 @@ sdl.sdl_init=function(width,height,init,render){
   _.SDL_Init(_.SDL_INIT_EVERYTHING);
   _._init();
   _.surface=_.SDL_SetVideoMode(width, height, 32, _.SDL_SWSURFACE);
-  _.cpixels=_.surface.contents.pixels; // this is a void pointer to the pixels in the SDL_Surface
-  _.pixels_raw=new ArrayBuffer(_.width*_.height*4); // ArrayBuffer backing our JS pixels array
+  _.cpixels=_.surface.contents.pixels; // this is a void pointer to the pixels
+                                       // in the SDL_Surface
+  _.pixels_raw=new ArrayBuffer(_.width*_.height*4);
+  // pixels_raw is an ArrayBuffer backing our JS pixels array
   // pixels_raw will be memcpy'd to cpixels prior to calling SDL_Flip
-  _.pixels=new Uint8Array(_.pixels_raw);  // this will be the JS array where we paint our pixels
+  _.pixels=new Uint8Array(_.pixels_raw);  // this will be the JS array where we
+                                          // paint our pixels
 }
 
 
