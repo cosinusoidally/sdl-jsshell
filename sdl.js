@@ -439,7 +439,9 @@ sdl.sdl_init=function(width,height,init,render){
   _.running=true;
   _.event_raw=new ArrayBuffer(_.sizeof_SDL_Event);
   _.event=new Uint8Array(_.event_raw);
-  _.draw_frame=true;
+  _.draw_frame=false; // initially false since the 1st frame is scheduled
+                      // inside sdl_mainloop. If we had set this to true
+                      // we will end up with each frame being drawn twice
   if(init){_._init=init};
   if(render){_.render=render};
   _.SDL_Init(_.SDL_INIT_EVERYTHING);
