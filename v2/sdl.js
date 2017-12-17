@@ -66,21 +66,29 @@ GitHub before they disappear. This problem will go away once the release/
 builds of jsshell are available for a stable release of Firefox (they are only
 currently there for FF 58, which is still in beta).
 
+I'd recommend using the ESR version of jsshell, but in theory it should work on
+many other versions.
+
 Setting Up
 ----------
 
 This was written and tested on a x86_64 Ubuntu 14.04 system (but it should work
-on any x86_64 Linux distro with SDL 1.2 from CentOS 6 up). The below code makes
-assumptions about being on an x86_64 Linux system (specifically struct
-alignment, calling convention, etc). It probably will not work anywhere else.
-It could be ported though. I do plan to get a win32 version going, but I
-haven't ported it yet. 
-
-This code should work on pretty much any version of jsshell, but the version I
-have used is 45.8.0 .
+on any x86_64 Linux distro with SDL 1.2 from CentOS 6 up). It should also work
+on win32. Docs on setting up for win32 are in setup-win32.js . This code should
+work on pretty much any version of jsshell, but the version I have used is
+45.8.0 .
 
 Getting jsshell
 ---------------
+
+I've set up a mirror of 45.8.0esr here:
+
+https://github.com/cosinusoidally/jsshell-binaries-mirror
+
+The above mirror also contains the required Mozilla signature files.
+
+If you'd prefer to get it from Mozilla's servers please the instructions are as follows:
+
 wget https://archive.mozilla.org/pub/firefox/candidates/45.8.0esr-candidates/build2/jsshell-linux-x86_64.zip
 wget https://archive.mozilla.org/pub/firefox/candidates/45.8.0esr-candidates/build2/linux-x86_64/en-US/firefox-45.8.0esr.checksums
 wget https://archive.mozilla.org/pub/firefox/candidates/45.8.0esr-candidates/build2/linux-x86_64/en-US/firefox-45.8.0esr.checksums.asc
@@ -137,6 +145,10 @@ apt-get install libsdl1.2debian
 It is also handy to get libsdl1.2-dev just in case you need to write any SDL C
 code to figure out structure sizes, field offsets, etc (only useful if you are
 doing dev work on this code itself).
+
+The win32 version of SDL 1.2 is available here:
+
+https://www.libsdl.org/download-1.2.php
 
 Documentation is here https://www.libsdl.org/release/SDL-1.2.15/docs/ . The
 docs are very good. We will be referring to these a lot.
