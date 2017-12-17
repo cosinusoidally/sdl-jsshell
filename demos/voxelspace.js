@@ -4,7 +4,7 @@ This code is based on https://github.com/s-macke/VoxelSpace with modifications
 by me (Liam Wilson).
 
 All credit for the rendering section goes to Sebastian Macke (s-macke). if you
-are interested in how the rendering works read his exelent explaination here:
+are interested in how the rendering works read his exellent explanation here:
 https://github.com/s-macke/VoxelSpace
 
 I don't really want to host Comanche map files on my Github, so please grab
