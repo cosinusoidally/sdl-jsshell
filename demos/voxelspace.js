@@ -8,7 +8,11 @@ are interested in how the rendering works read his exellent explanation here:
 https://github.com/s-macke/VoxelSpace
 
 I don't really want to host Comanche map files on my Github, so please grab
-them from his.
+them from his (or get them from elsewhere).
+
+The demo displays a Comanche map. The camera moves forward at a constant rate.
+The camera can be moved left or right by moving the mouse to the left or right
+of the window.
 
 Further setup instructions after the license bit:
 
