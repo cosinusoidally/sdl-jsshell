@@ -4,4 +4,4 @@ which contains a simple example of how to use the API.
 Note there are currently 2 versions:
 
 * v1 only supports linux-x86_64
-* v2 supports both win32 and linux-x86_64
+* v2 supports both win32 and linux-x86_64 (work in progress)
