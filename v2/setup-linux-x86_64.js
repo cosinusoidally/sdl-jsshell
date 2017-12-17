@@ -1,7 +1,3 @@
-sdl.voidptr=ctypes.voidptr_t(0); // null pointer, needed in several places
-sdl.cb=ctypes.voidptr_t(0); // This is a callback to pass in to SDL_AddTimer.
-                            // Here we set it initially to a null pointer
-
 /*
 
 In _.cb we must store a pointer to a function to be called by SDL_AddTimer

@@ -12,6 +12,10 @@ At this point we are ready to start trying to load libraries. In order to load t
 sdl.detect_system=function(){
   // We currently only support linux-x86_64 and win32
   // First detect the pointer size. This will be 4 on 32-bit and 8 on 64-bit
+  sdl.voidptr=ctypes.voidptr_t(0); // null pointer, needed in several places
+  sdl.cb=ctypes.voidptr_t(0); // This is a callback to pass in to SDL_AddTimer.
+                              // Here we set it initially to a null pointer
+
   sdl.ptr_size=ctypes.voidptr_t.size;
   sdl.system="unsupported";
   if(sdl.ptr_size===4){ // assume if 32 bit we are on win32
