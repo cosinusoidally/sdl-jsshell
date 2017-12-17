@@ -306,6 +306,9 @@ executable memory, generate some machine code into that memory, and then call
 in to that memory using jsctypes. Exact implementation details are further down
 this document.
 
+The code also contains a polyfill implementation (in setup-polyfill.js) that
+can be used for systems that do not yet have a machine code version.
+
 
 The implementation
 ------------------
@@ -433,18 +436,4 @@ to handle keyboard events, but that can be added fairly simply.
 
 See test.js for a simple example program using this library.
 
-*/
-
-
-
-//Misc junk:
-//----------
-
-// Just a dummy version of SDL_AddTimer that I used during development.
-
-/*
-sdl.SDL_AddTimer=function(){
-  var _=this;
-  print("Dummy SDL_AddTimer");
-}
 */
