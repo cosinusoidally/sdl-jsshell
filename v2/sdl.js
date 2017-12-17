@@ -262,7 +262,14 @@ function process_event(){
   }
 }
 
-Our render function will paint to the back buffer: 
+Our render function will paint to the back buffer. We have picked a 32 bit mode
+so this will give us a linear frame buffer to draw to (scans out to the screen
+from top left to bottom right in horizontal rows). surface.pixels will contain
+the pixel data, which will be in Blue, Green, Red, Alpha order (I think, could
+also be Red, Green, Blue, Alpha, if your colours look weird you probably are
+painting the channels in the wrong order). All channels are 8 bits. The Alpha
+channel is ignored (maybe alpha channel is the wrong term, "padding" might be
+more appropriate). 
 
 function render(surface){
 ... do some rendering ...
