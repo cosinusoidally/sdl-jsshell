@@ -36,7 +36,11 @@ SOFTWARE.
 
 
 
+jsshell's handling of script loading is a bit wonkey. It doesn't deal with
+relative paths well. "load-wrap.js" hacks around this limitation so that
+load("./sdl.js"); will actually work as expected.
 */
+load("load-wrap.js");
 
 load("./sdl.js");
 
@@ -256,63 +260,19 @@ function Draw()
 function Init()
 {
    var a,c;
-   if(sdl.platform==="win32"){
-     a=JSON.parse(read("./c1w.json"));
-     c=JSON.parse(read("./d1.json")); 
-   }
-   if(sdl.platform==="Linux64"){
-     a=new Uint8Array(createMappedArrayBuffer("./C1W.ppm"));
-     c=new Uint8Array(createMappedArrayBuffer("./D1.ppm"));
-   }
+   a=new Uint8Array(read("../../comanche-maps/C1W.ppm","binary"));
+   c=new Uint8Array(read("../../comanche-maps/D1.ppm","binary"));
    var b=new Uint8Array(a);
     for(var i=0;i<map.color.length;i++){
         map.color[i]=b[i*3]<<16|b[i*3+1]<<8|b[i*3+2];
-//        map.color[i*4+1]=b[i*3+1];
-//        map.color[i*4+1]=b[i*3+2];
     }   
     for(var i=0;i<map.altitude.length;i++){
         map.altitude[i]=c[i*3];
     }
-/*
-    LoadMap("C1W;D1");
-    OnResizeWindow();
-*/
-    // set event handlers for keyboard, mouse, touchscreen and window resize
-/*
-    document.onkeydown    = DetectKeysDown;
-    document.onkeyup      = DetectKeysUp;
-    document.onmousedown  = DetectMouseDown;
-    document.onmouseup    = DetectMouseUp;
-    document.onmousemove  = DetectMouseMove;
-    document.ontouchstart = DetectMouseDown;
-    document.ontouchend   = DetectMouseUp;
-    document.ontouchmove  = DetectMouseMove;
-    window.onresize       = OnResizeWindow;
-*/
-
 }
 
 Init();
 
-
-/*
-function myrender(_){
-//  print("myrender called");
-  var l=_.pixels.length;
-  var p=_.pixels;
-  var w=_.width;
-  var h=_.height;
-  for(var y=0;y<h;y++){
-    for(var x=0;x<w;x++){
-      var o=4*(y*w+x);
-      p[o]=255*Math.sqrt(Math.pow(x-_.mx,2)+Math.pow(y-_.my,2));
-      p[o+1]=0;
-      p[o+2]=0;
-    }
-  }
-  return true;
-}
-*/
 function myrender(_){
   Draw();
   return true;
