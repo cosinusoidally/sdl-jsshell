@@ -30,7 +30,7 @@ js.exe test.js
 
 /*
 See also setup-linux-x86_64.js . This works in a very similar way.
-VirtualAlloc is an approximante win32 analogue of mmap. The machine code snippet
+VirtualAlloc is an approximate win32 analogue of mmap. The machine code snippet
 used was generated with mingw on Linux.
 */
 
