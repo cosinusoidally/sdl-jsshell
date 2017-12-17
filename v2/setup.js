@@ -52,26 +52,28 @@ if(!sdl.detect_system()){
 };
 
 print("System type: "+sdl.system);
-// we will load the libraries into the .lib field of sdl and libc 
-// sdl.lib=ctypes.open("libSDL-1.2.so.0");
-// libc.lib = ctypes.open("libc.so.6");
+if(sdl.system==="linux-x86_64"){
+  // Declare required libc functions and constants:
 
-// Declare required libc functions and constants:
+  libc.PROT_READ=1;
+  libc.PROT_WRITE=2;
+  libc.PROT_EXEC=4;
+  libc.MAP_ANONYMOUS=32;
+  libc.MAP_PRIVATE=2;
 
-libc.PROT_READ=1;
-libc.PROT_WRITE=2;
-libc.PROT_EXEC=4;
-libc.MAP_ANONYMOUS=32;
-libc.MAP_PRIVATE=2;
+  // void *memcpy(void *dest, const void *src, size_t n);
+  libc.memcpy= libc.lib.declare("memcpy",ctypes.default_abi,ctypes.voidptr_t,ctypes.voidptr_t, ctypes.voidptr_t,ctypes.uint64_t);
 
-// void *memcpy(void *dest, const void *src, size_t n);
-libc.memcpy= libc.lib.declare("memcpy",ctypes.default_abi,ctypes.voidptr_t,ctypes.voidptr_t, ctypes.voidptr_t,ctypes.uint64_t);
+  // void *mmap(void *addr, size_t length, int prot, int flags,
+  //                  int fd, off_t offset);
+  libc.mmap=libc.lib.declare("mmap",ctypes.default_abi, ctypes.voidptr_t,ctypes.voidptr_t,ctypes.uint64_t,ctypes.int,ctypes.int,ctypes.int,ctypes.uint64_t);
+};
 
-// void *mmap(void *addr, size_t length, int prot, int flags,
-//                  int fd, off_t offset);
-libc.mmap=libc.lib.declare("mmap",ctypes.default_abi, ctypes.voidptr_t,ctypes.voidptr_t,ctypes.uint64_t,ctypes.int,ctypes.int,ctypes.int,ctypes.uint64_t);
+
 
 // Declare required SDL functions and constants:
+
+// Note these SDL declarations are actually identical for win32 and linux-x86_64
 
 // Note I don't implement all the fields from SDL_Surface. I only really care
 // about w, h, and *pixels (so I only implement the fields up to and including
