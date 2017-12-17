@@ -1,0 +1,11 @@
+Just a couple of ideas for how to improve the voxelspace.js demo:
+
+Load and decode the real demo maps included with the Comanche game demo. This
+would mean converting
+https://github.com/s-macke/VoxelSpace/blob/master/tools/comanche2extract/extract.c
+to JS so that we can just decode and load the DTA files from disk. The benefit
+of doing this is that we will not have to rely on the png versions hosted by
+s-macke. We can instead grab the demo version of Comanche from archive.org (or
+wherever) and then just extract the DTA files (C1.DTA and D1.DTA) from that
+(demo is available from archive.org here:
+https://archive.org/details/ComancheMaximumOverkill_1020 ). 
