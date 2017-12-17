@@ -332,10 +332,6 @@ sdl.onmousemove=function(mx,my){print("mousemove:"+mx+","+my)};
 sdl.onmousedown=function(){print("mousedown")};
 sdl.onmouseup=function(mx,my){print("mouseup")};
 
-sdl.voidptr=ctypes.voidptr_t(0); // null pointer, just handy to have
-sdl.cb=ctypes.voidptr_t(0); // This is a callback to pass in to SDL_AddTimer.
-                            // Here we set it initially to a null pointer
-
 
 sdl.sdl_init=function(width,height,init,render){
   var _=this;

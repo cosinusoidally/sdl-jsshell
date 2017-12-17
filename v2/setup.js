@@ -28,6 +28,8 @@ sdl.detect_system=function(){
       print("Couldn't load msvcr120.dll");
       return false;
     };
+    sdl.system="win32";
+    return true;
   };
   if(sdl.ptr_size===8){ // assume if 32 bit we are on win32
     print("64-bit, assuming linux-x86_64");
@@ -80,3 +82,10 @@ if(sdl.system==="linux-x86_64"){
   // Next we must set up the x86_64 machine code required:
   load("setup-linux-x86_64.js");
 };
+
+if(sdl.system==="win32"){
+  // void *memcpy(void *dest, const void *src, size_t n);
+  libc.memcpy= libc.lib.declare("memcpy",ctypes.default_abi,ctypes.voidptr_t,ctypes.voidptr_t, ctypes.voidptr_t,ctypes.uint32_t);
+  load("setup-sdl.js");
+  load("setup-win32.js");
+}
