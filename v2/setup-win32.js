@@ -25,6 +25,14 @@ You should then be able to run the test.js file using:
 
 js.exe test.js
 
+Just a quick word about WINE. This should work fine under WINE. I've tested and
+jsshell 45 works perfectly fine under WINE on Ubuntu 14.04. The only problem is
+if your version of jsshell is too new. I think everything above about jsshell
+54 won't work on the version of WINE that ships with Ubuntu 14.04. If you want
+to use the latest version of jsshell under WINE (which is jsshell 58.0b9 when
+this particular bit of text was written) you will need the latest devel version
+of WINE (it worked fine for me with WINE 2.22.something).
+
 */
 
 
