@@ -25,6 +25,11 @@ You should then be able to run the test.js file using:
 
 js.exe test.js
 
+Note that if the version of jsshell that you are using is higher than 45 there
+is another step you must follow. You must put a copy of msvcp120.dll and
+msvcr120.dll in the same directory as js.exe (you can just grab these dlls from
+the win32 jsshell 45 zip file).
+
 Just a quick word about WINE. This should work fine under WINE. I've tested and
 jsshell 45 works perfectly fine under WINE on Ubuntu 14.04. The only problem is
 if your version of jsshell is too new. I think everything above about jsshell
