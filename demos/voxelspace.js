@@ -34,7 +34,64 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+Setting up
+----------
 
+With this version you need to put the map files in a directory called
+comanche-maps relative to this directory specifically in:
+
+../../comanche-maps/
+
+It expects 2 map files:
+
+../../comanche-maps/C1W.ppm
+../../comanche-maps/D1.ppm
+
+These must be 1024x1024 24 bit RGB Netpbm (ppm) files
+(https://en.wikipedia.org/wiki/Netpbm_format). I use that format because it
+allows me to avoid the complexity of having to integrate a png decoder in to my
+program.
+
+To download and generate the ppm files, starting from the demos directory:
+
+cd ../../
+mkdir comanche-maps
+cd comanche-maps
+wget https://github.com/s-macke/VoxelSpace/raw/gh-pages/maps/C1W.png
+wget https://github.com/s-macke/VoxelSpace/raw/gh-pages/maps/D1.png
+convert C1W.png C1W.ppm
+convert D1.png D1.ppm
+
+convert is a tool from Imagemagick. It should be available in your package
+manager if you don't already have it.
+
+
+The Netpbm file format is simple. There are different format modes, but all I
+care about is 24 the bit binary RGB format. The file consists of an ASCII
+header:
+
+P6
+width height
+255
+
+P6 means binary RGB file. 
+
+width and height are numbers represented as strings (eg the string: 1024).
+
+The 255 indicates the colour range per channel (it's 8 bits per channel which
+gives us colours in the range 0-255 for each channel).
+
+This ASCII header is followed by pixel data. The pixel data is 3 bytes per
+pixel, RGB order, running in horizontal rows from the top left to the bottom
+right of the image.
+
+As a JS string our header will be "P6\n1024 1024\n255\n". In this version of
+the program we just skip the header and load the pixel data (ie we don't bother
+to validate whether the header is correct we just assume it is and the pixel
+data is in the right place).
+
+The implementation
+------------------
 
 jsshell's handling of script loading is a bit wonkey. It doesn't deal with
 relative paths well. "load-wrap.js" hacks around this limitation so that
@@ -260,14 +317,16 @@ function Draw()
 function Init()
 {
    var a,c;
+   var h="P6\n1024 1024\n255\n".length; // length of ppm header
    a=new Uint8Array(read("../../comanche-maps/C1W.ppm","binary"));
    c=new Uint8Array(read("../../comanche-maps/D1.ppm","binary"));
-   var b=new Uint8Array(a);
+
+   var b=a;
     for(var i=0;i<map.color.length;i++){
-        map.color[i]=b[i*3]<<16|b[i*3+1]<<8|b[i*3+2];
+        map.color[i]=b[h+(i*3)]<<16|b[h+(i*3+1)]<<8|b[h+(i*3+2)];
     }   
     for(var i=0;i<map.altitude.length;i++){
-        map.altitude[i]=c[i*3];
+        map.altitude[i]=c[h+(i*3)];
     }
 }
 
