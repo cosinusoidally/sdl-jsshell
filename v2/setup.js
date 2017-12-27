@@ -19,7 +19,22 @@ sdl.detect_system=function(){
   sdl.ptr_size=ctypes.voidptr_t.size;
   sdl.system="unsupported";
   if(sdl.ptr_size===4){ // assume if 32 bit we are on win32
-    print("32-bit, assuming win32");
+    print("32-bit");
+    try {
+      sdl.lib=ctypes.open("libSDL-1.2.so.0");
+    } catch(e){
+      print("Couldn't load libSDL-1.2.so.0");
+      return false;
+    };
+    // try and load libc
+    try {
+      libc.lib = ctypes.open("libc.so.6");
+      sdl.system="linux-i686";
+      return true;
+    } catch(e){
+      print("Couldn't load libc.so.6");
+      return false;
+    };
     try {
       sdl.lib=ctypes.open("SDL.dll");
     } catch(e){
@@ -64,6 +79,28 @@ if(!sdl.detect_system()){
 };
 
 print("System type: "+sdl.system);
+if(sdl.system==="linux-i686"){
+  // This is system specific setup code
+  // Declare required libc functions and constants:
+
+  libc.PROT_READ=1;
+  libc.PROT_WRITE=2;
+  libc.PROT_EXEC=4;
+  libc.MAP_ANONYMOUS=32;
+  libc.MAP_PRIVATE=2;
+
+  // void *memcpy(void *dest, const void *src, size_t n);
+  libc.memcpy= libc.lib.declare("memcpy",ctypes.default_abi,ctypes.voidptr_t,ctypes.voidptr_t, ctypes.voidptr_t,ctypes.uint32_t);
+
+  // void *mmap(void *addr, size_t length, int prot, int flags,
+  //                  int fd, off_t offset);
+  libc.mmap=libc.lib.declare("mmap",ctypes.default_abi, ctypes.voidptr_t,ctypes.voidptr_t,ctypes.uint32_t,ctypes.int,ctypes.int,ctypes.int,ctypes.uint32_t);
+  
+  // setup sdl (common code) 
+  load("setup-sdl.js");
+  // Next we must set up the x86_64 machine code required:
+  load("setup-linux-i686.js");
+};
 if(sdl.system==="linux-x86_64"){
   // This is system specific setup code
   // Declare required libc functions and constants:
