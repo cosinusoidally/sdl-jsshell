@@ -1,6 +1,7 @@
 // Declare required SDL functions and constants:
 
-// Note these SDL declarations are actually identical for win32 and linux-x86_64
+// Note these SDL declarations are actually identical for all our currently
+// supported platforms
 
 // Note I don't implement all the fields from SDL_Surface. I only really care
 // about w, h, and *pixels (so I only implement the fields up to and including

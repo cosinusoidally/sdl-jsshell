@@ -52,7 +52,7 @@ sdl.detect_system=function(){
     sdl.system="win32";
     return true;
   };
-  if(sdl.ptr_size===8){ // assume if 32 bit we are on win32
+  if(sdl.ptr_size===8){
     print("64-bit, assuming linux-x86_64");
     // try and load sdl
     try {
@@ -100,7 +100,7 @@ if(sdl.system==="linux-i686"){
   
   // setup sdl (common code) 
   load("setup-sdl.js");
-  // Next we must set up the x86_64 machine code required:
+  // Next we must set up the linux-i686 machine code required:
   load("setup-linux-i686.js");
 };
 if(sdl.system==="linux-x86_64"){
