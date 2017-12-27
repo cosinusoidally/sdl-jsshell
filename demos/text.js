@@ -32,7 +32,9 @@ function drawchar(p,x,y,c){
   for(var yy=0;yy<20;yy++){
     for(var xx=0;xx<12;xx++){
       var col=getpixel(font,xi+xx,yi+yy,192,320);
-      pset(p,x+xx,y+yy,col[0],col[1],col[2]);
+      if(col[0]===255 && col[1]===255 && col[2]===255){
+        pset(p,x+xx,y+yy,col[0],col[1],col[2]);
+      }
     }
   }
 }
@@ -52,7 +54,7 @@ function myrender(_){
 */
     }
   }
-  var str="Hello world. This is a a text drawing demo.".split("");
+  var str="Hello world. This is a text drawing demo.".split("");
 
   for(j=0;j<str.length;j++){
     drawchar(_,100+12*j,100+Math.floor(10*Math.sin(((Date.now()-st)/100+j/2)% (2*Math.PI))),str[j]);
