@@ -10,7 +10,7 @@ kernel32={}; // Only used on win32
 At this point we are ready to start trying to load libraries. In order to load the right libraries we must detect which system we are on.
 */
 sdl.detect_system=function(){
-  // We currently only support linux-x86_64 and win32
+  // We currently support linux-i686, linux-x86_64 and win32
   // First detect the pointer size. This will be 4 on 32-bit and 8 on 64-bit
   sdl.voidptr=ctypes.voidptr_t(0); // null pointer, needed in several places
   sdl.cb=ctypes.voidptr_t(0); // This is a callback to pass in to SDL_AddTimer.
@@ -18,23 +18,25 @@ sdl.detect_system=function(){
 
   sdl.ptr_size=ctypes.voidptr_t.size;
   sdl.system="unsupported";
-  if(sdl.ptr_size===4){ // assume if 32 bit we are on win32
+  if(sdl.ptr_size===4){ // 32 bit pointer, either win32 or linux-i686
     print("32-bit");
     try {
-      sdl.lib=ctypes.open("libSDL-1.2.so.0");
-    } catch(e){
-      print("Couldn't load libSDL-1.2.so.0");
-      return false;
-    };
-    // try and load libc
-    try {
-      libc.lib = ctypes.open("libc.so.6");
-      sdl.system="linux-i686";
-      return true;
-    } catch(e){
-      print("Couldn't load libc.so.6");
-      return false;
-    };
+      try {
+        libc.lib = ctypes.open("libc.so.6");
+      } catch(e){
+        print("Couldn't load libc.so.6 (not on linux-i686, either no 32 bit libs or on win32)");
+        throw "not linux-i686";
+      };
+      // try and load libc
+      try {
+        sdl.lib=ctypes.open("libSDL-1.2.so.0");
+        sdl.system="linux-i686";
+        return true;
+      } catch(e){
+        print("Couldn't load libSDL-1.2.so.0");
+        throw "no sdl";
+      };
+    } catch(e){ };
     try {
       sdl.lib=ctypes.open("SDL.dll");
     } catch(e){
