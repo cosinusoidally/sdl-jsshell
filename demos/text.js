@@ -47,7 +47,7 @@ function myrender(_){
   var h=_.height;
   for(var y=0;y<h;y++){
     for(var x=0;x<w;x++){
-      pset(_,x,y,0,0,0);
+      pset(_,x,y,Math.floor(255*x/w),Math.floor(255*y/h),Math.floor(255*(1-x/w)));
 /*
       var c=getpixel(font,x,y,192,320);
       pset(_,x+_.mx,y+_.my,c[0],c[1],c[2]);
