@@ -38,7 +38,7 @@ To setup our timer we schedule a periodic timer with SDL_AddTimer. The callback
 will do 2 things:
 
 * call SDL_CondSignal on a condition variable
-* return the same interval value (this schedules the callback)
+* return the same interval value (this schedules the next timer callback)
 
 The callback function cannot be written in JS (since the timer callback happens
 from a different thread and in Spidermonkey jsctypes callbacks cannot be called
