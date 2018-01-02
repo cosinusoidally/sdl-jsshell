@@ -32,7 +32,7 @@ arrived (I assumed it would, say, wait on a condition variable and then wake up
 when an event came in). You can see from above that SDL_WaitEvent checks to see
 if there is an event, if there is one it returns it, if not it sleeps for 10ms
 and tries again. It is essentially polling 100 times per second to see if there
-is an event. In my v0.0.2 code I schedules frames using a timer. When the timer
+is an event. In my v0.0.2 code I schedule frames using a timer. When the timer
 fires it puts an event in to the event queue. I assumed this would immediately
 wake up my mainloop (which is sat waiting for an event using SDL_WaitEvent).
 Because of this implementation of SDL_WaitEvent my code may end up waiting an
@@ -75,8 +75,8 @@ timer event observed and render called (at t=26)
 
 So again we end up only calling render every 26ms.
 
-Ironically slower machines will actually get a better framerate (slower up to a
-certain point). eg:
+Ironically slower machines (up to a certain point) will actually get a better
+framerate.  eg:
 
 suppose render takes 17ms
 
