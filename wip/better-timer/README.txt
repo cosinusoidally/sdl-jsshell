@@ -90,3 +90,6 @@ render called again (t=17).
 And if render takes more than 17ms there will always be a timer event in the
 queue so SDL_WaitEvent will return an event immediately.
 
+Hopefully we are now convinced there is a problem with this approach. The next
+step is to figure out a fix (see progress.txt for further info).
+
