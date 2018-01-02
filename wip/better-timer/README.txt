@@ -69,7 +69,7 @@ SDL_WaitEvent called. (at t=6)
 No events so wait 10ms (t=16)
 SDL_WaitEvent called. (at t=16)
 timer event comes in at t=17
-No events so wait 10ms (t=16)
+No events so wait 10ms (t=26)
 SDL_WaitEvent called (at t=26)
 timer event observed and render called (at t=26)
 
@@ -87,5 +87,6 @@ SDL_WaitEvent called (at t=17)
 timer event observed.
 render called again (t=17).
 
-
+And if render takes more than 17ms there will always be a timer event in the
+queue so SDL_WaitEvent will return an event immediately.
 
