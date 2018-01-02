@@ -1,1 +1,48 @@
-None yet, check back in a bit.
+Problem statement is in ./README.txt . This file details the plan and progress
+towards a fix.
+
+Plan
+
+Restructure the main loop to look something like this:
+
+while(running){
+  while(SDL_PollEvent(...)){
+    // process all events in the queue, draining the whole queue in the process.
+  }
+  render(); // draw our frame;
+  wait(); // where wait will wait for the next frame.
+}
+
+The wait function needs to get woken up each time our frame timer fires. To do
+this it will wait on a condition variable. Something like this:
+
+function wait(){
+  SDL_CondWait(cond, mut);
+}
+
+SDL_CondWait will block until the condition varable is signalled (with
+SDL_CondSignal).
+
+* cond is our condition variable (we never actually modify this variable, we
+  just wait on it).
+* mut is SDL_mutex mutex object. During initialisation of our app we will lock
+  this by the main thread and never permanently unlock it for the duration of
+  the program (SDL_CondWait will temporarily unlock it, but it locks it again
+  after SDL_CondWait returns).
+
+As you can see all wait does it wait for SDL_CondWait to unblock. To unblock
+SDL_CondWait we must call SDL_CondSignal from a timer callback function.
+
+
+To setup our timer we schedule a periodic timer with SDL_AddTimer. The callback
+will do 2 things:
+
+* call SDL_CondSignal on a condition variable
+* return the same interval value (this schedules the callback)
+
+The callback function cannot be written in JS (since the timer callback happens
+from a different thread and in Spidermonkey jsctypes callbacks cannot be called
+from a different thread).
+
+Similar to v0.0.2 I'll generate a bit of machine code, load it in to RAM, patch
+it up from JS, and then pass to SDL_AddTimer as the callback function.
