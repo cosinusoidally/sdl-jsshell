@@ -36,7 +36,7 @@ is an event. In my v0.0.2 code I schedule frames using a timer. When the timer
 fires it puts an event in to the event queue. I assumed this would immediately
 wake up my mainloop (which is sat waiting for an event using SDL_WaitEvent).
 Because of this implementation of SDL_WaitEvent my code may end up waiting an
-additional 10ms before drawing a frame (or more, if I'm unluck).
+additional 10ms before drawing a frame (or more, if I'm unlucky).
 
 To illustrate the problem here are a few examples (for these we are ignoring
 all other events that may end up in the event queue):
