@@ -2,6 +2,7 @@ Problem statement is in ./README.txt . This file details the plan and progress
 towards a fix.
 
 Plan
+====
 
 Restructure the main loop to look something like this:
 
@@ -45,4 +46,36 @@ from a different thread and in Spidermonkey jsctypes callbacks cannot be called
 from a different thread).
 
 Similar to v0.0.2 I'll generate a bit of machine code, load it in to RAM, patch
-it up from JS, and then pass to SDL_AddTimer as the callback function.
+it up from JS, and then pass it to SDL_AddTimer as the callback function.
+
+
+Progress
+========
+
+* in planning stage atm
+
+TODO
+====
+
+* write a dummy version of wait. This will allow me to move on to restructing
+  the main loop before moving on to implementing the condition variable version
+  of wait. The dummy version can just poll Date.now() until enough time
+  elapses.
+* restructure sdl.sdl_mainloop as per above plan
+* create condition variable and mutex. This will require binding a few more SDL
+  funtions to JS. Namely:
+  SDL_CreateMutex
+  SDL_CreateCond
+  SDL_CondWait (only need the address of this one to pass to our timer callback)
+  
+  and for the manipulation of the mutex:
+  SDL_mutexP (we will use this to lock the mutex)
+  SDL_mutexV (to unlock the mutex, probably not needed)
+* Create a shared library written in C that is our timer callback.
+* Write code to load in our shared library
+* Wire up our timer callback function
+* Reimplement wait to use SDL_CondWait
+* Replace our shared library with small chunks of machine code that are loaded
+  and patched up by JS (this is to avoid depending on needing a C compiler, or
+  the need to distribute a binary .dll or .so file). This will be done in much
+  the same way as v0.0.2 does it for its timer callbacks.
