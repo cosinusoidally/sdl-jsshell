@@ -401,7 +401,7 @@ sdl.update_framerate=function(){
   var now=Date.now();
   var delta=now-_.fps_timerstart;
   if(delta>1000){
-    print(_.fps_framecount/(delta));
+    print(1000*_.fps_framecount/(delta));
     _.fps_timerstart=now;
     _.fps_framecount=0;
   };
@@ -425,6 +425,7 @@ sdl.sdl_mainloop=function(){
         _.SDL_Flip(_.surface); 
       }
       _.draw_frame=false; // reset draw_frame
+      _.update_framerate();
     }
   };
   _.SDL_Quit();
