@@ -381,8 +381,31 @@ sdl.sdl_init=function(width,height,init,render){
   // pixels_raw will be memcpy'd to cpixels prior to calling SDL_Flip
   _.pixels=new Uint8Array(_.pixels_raw);  // this will be the JS array where we
                                           // paint our pixels
+  _.last_frame_time=Date.now();
+  _.fps_framecount=0;
+  _.fps_timerstart=Date.now();
 }
 
+
+
+sdl.wait_for_next_frame=function(){
+  this=_;
+  var now;
+  while(((now=Date.now())-_.last_frame_time)<20){};
+  _.last_frame_time=now;
+};
+
+sdl.update_framerate=function(){
+  _.fps_framecount++;
+  this=_;
+  var now=Date.now();
+  var delta=now-_.fps_timerstart;
+  if(delta>1000){
+    print(_.fps_framecount/(delta));
+    _.fps_timerstart=now;
+    _.fps_framecount=0;
+  };
+}
 
 sdl.sdl_mainloop=function(){
   var _=this;
