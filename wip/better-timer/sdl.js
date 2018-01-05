@@ -389,15 +389,15 @@ sdl.sdl_init=function(width,height,init,render){
 
 
 sdl.wait_for_next_frame=function(){
-  this=_;
+  var _=this;
   var now;
   while(((now=Date.now())-_.last_frame_time)<20){};
   _.last_frame_time=now;
 };
 
 sdl.update_framerate=function(){
+  var _=this;
   _.fps_framecount++;
-  this=_;
   var now=Date.now();
   var delta=now-_.fps_timerstart;
   if(delta>1000){
