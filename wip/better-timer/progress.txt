@@ -52,15 +52,22 @@ it up from JS, and then pass it to SDL_AddTimer as the callback function.
 Progress
 ========
 
-* in planning stage atm
-
-TODO
+DONE
 ====
+
+In progress atm
+
+IN-PROGRESS
+===========
 
 * write a dummy version of wait. This will allow me to move on to restructing
   the main loop before moving on to implementing the condition variable version
   of wait. The dummy version can just poll Date.now() until enough time
   elapses.
+
+TODO
+====
+
 * restructure sdl.sdl_mainloop as per above plan
 * create condition variable and mutex. This will require binding a few more SDL
   funtions to JS. Namely:
