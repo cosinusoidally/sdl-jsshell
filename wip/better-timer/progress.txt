@@ -93,8 +93,12 @@ DONE
   the method is ok as a guideline.
 
 * restructure sdl.sdl_mainloop as per above plan
-  
-  
+   
+  also changed frame_internal to a multiple of 10 ms (since that is all the
+  resolution you get with timer callbacks). Set to 20 ms (50Hz).
+
+  frame rate is now a fairly stable 50Hz (but I am currently polling for time,
+  which might explain that).
   
 
 IN-PROGRESS
