@@ -409,6 +409,15 @@ sdl.update_framerate=function(){
   };
 }
 
+libcb={};
+libcb.lib=ctypes.open("libcb.so");
+libcb.init=libcb.lib.declare("init",ctypes.default_abi, ctypes.void_t);
+libcb.getmut=libcb.lib.declare("getmut",ctypes.default_abi, ctypes.voidptr_t);
+libcb.getcond=libcb.lib.declare("getcond",ctypes.default_abi, ctypes.voidptr_t);
+
+libcb.cond=libcb.getcond();
+libcb.mut=libcb.getmut();
+
 sdl.sdl_mainloop=function(){
   var _=this;
   while(_.running){
