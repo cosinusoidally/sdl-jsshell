@@ -419,7 +419,7 @@ sdl.update_framerate=function(){
   _.fps_framecount++;
   var now=Date.now();
   var delta=now-_.fps_timerstart;
-  if(delta>1000){
+  if(delta>=1000){
     print(1000*_.fps_framecount/(delta));
     _.fps_timerstart=now;
     _.fps_framecount=0;
