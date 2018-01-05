@@ -55,20 +55,51 @@ Progress
 DONE
 ====
 
-In progress atm
-
-IN-PROGRESS
-===========
-
 * write a dummy version of wait. This will allow me to move on to restructing
   the main loop before moving on to implementing the condition variable version
   of wait. The dummy version can just poll Date.now() until enough time
   elapses.
 
+
+  Actually called wait function sdl.wait_for_next_frame
+
+  Also added code to measure and display framerate sdl.update_framerate (so I
+  can get an idea of how stable the current framerate is)
+
+  currently the framerate is a bit variable:
+
+  js ./test.js
+
+66.60039761431412
+69.5134061569017
+69.86027944111777
+67.0611439842209
+66.92913385826772
+68.93106893106894
+74.50980392156863
+68.52035749751738
+66.60039761431412
+66.47116324535679
+67.71344455348381
+72.92707292707293
+
+  This is actually higher than I expected, but as you can see it is does waver
+  a bit between about 73 and 67. Maybe it is higher because the timer is firing
+  more frequently than expected? Either way I'm not going to dig too much, the
+  fix I am pursuing should stabalise the framerate and allow me to set it to a
+  sensible value.
+
+  I suspect there may be slight issues with my measurement method, but I think
+  the method is ok as a guideline.
+
+IN-PROGRESS
+===========
+
+* restructure sdl.sdl_mainloop as per above plan
+
 TODO
 ====
 
-* restructure sdl.sdl_mainloop as per above plan
 * create condition variable and mutex. This will require binding a few more SDL
   funtions to JS. Namely:
   SDL_CreateMutex
