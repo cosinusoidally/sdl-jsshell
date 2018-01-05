@@ -1,0 +1,3 @@
+gcc -fPIC cb.c -lSDL -c
+gcc -shared -fPIC -lSDL cb.o -o libcb.so
+rm cb.o
