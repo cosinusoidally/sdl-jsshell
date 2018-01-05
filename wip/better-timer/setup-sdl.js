@@ -72,3 +72,8 @@ sdl.SDL_Quit=sdl.lib.declare("SDL_Quit",ctypes.default_abi, ctypes.void_t);
 // int SDL_WaitEvent(SDL_Event *event);
 sdl.SDL_WaitEvent=sdl.lib.declare("SDL_WaitEvent", ctypes.default_abi, ctypes.int, ctypes.uint8_t.array(sdl.sizeof_SDL_Event).ptr);
 
+// int SDL_mutexP(SDL_mutex *mutex);
+sdl.SDL_mutexP=sdl.lib.declare("SDL_mutexP", ctypes.default_abi, ctypes.int, ctypes.voidptr_t);
+
+// int SDL_CondWait(SDL_cond *cond, SDL_mutex *mut);
+sdl.SDL_CondWait=sdl.lib.declare("SDL_CondWait", ctypes.default_abi, ctypes.int, ctypes.voidptr_t, ctypes.voidptr_t);

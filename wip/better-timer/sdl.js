@@ -385,7 +385,7 @@ sdl.sdl_init=function(width,height,init,render){
   _.fps_timerstart=Date.now();
   // [better-timer] later I am going to need to include SDL_AddTimer to start
   // out background timer, just dropping some code here as a placeholder
-  // sdl.SDL_AddTimer(_.frame_interval,_.cb,_.voidptr);
+  sdl.SDL_AddTimer(_.frame_interval,libcb.cb,_.voidptr);
 }
 
 
