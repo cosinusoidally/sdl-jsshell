@@ -61,7 +61,7 @@ DONE
   elapses.
 
 
-  Actually called wait function sdl.wait_for_next_frame
+  Actually called wait function sdl.wait_for_next_frame (which is more descriptive)
 
   Also added code to measure and display framerate sdl.update_framerate (so I
   can get an idea of how stable the current framerate is)
@@ -92,27 +92,40 @@ DONE
   I suspect there may be slight issues with my measurement method, but I think
   the method is ok as a guideline.
 
+* restructure sdl.sdl_mainloop as per above plan
+  
+  
+  
+
 IN-PROGRESS
 ===========
 
-* restructure sdl.sdl_mainloop as per above plan
+* Create a shared library written in C that is our timer callback. Also add to
+ this library some auxilary code to create out muxtex and cond var
 
 TODO
 ====
 
-* create condition variable and mutex. This will require binding a few more SDL
-  funtions to JS. Namely:
-  SDL_CreateMutex
-  SDL_CreateCond
-  SDL_CondWait (only need the address of this one to pass to our timer callback)
+* Write code to load in our shared library, bind it to JS and run init function
+* start callback timer running
+* Binding a few more SDL funtions to JS. Namely:
+  
+  SDL_CondWait
   
   and for the manipulation of the mutex:
   SDL_mutexP (we will use this to lock the mutex)
   SDL_mutexV (to unlock the mutex, probably not needed)
-* Create a shared library written in C that is our timer callback.
-* Write code to load in our shared library
-* Wire up our timer callback function
+
 * Reimplement wait to use SDL_CondWait
+
+* move creation of mutex and condition variable into JS ie bind and call:
+
+  SDL_CreateMutex
+  SDL_CreateCond
+
+  The cond var and mutex are just void pointers. I'll need to malloc some storage
+  for these since otherwise Spidermonkey could move them around.
+
 * Replace our shared library with small chunks of machine code that are loaded
   and patched up by JS (this is to avoid depending on needing a C compiler, or
   the need to distribute a binary .dll or .so file). This will be done in much

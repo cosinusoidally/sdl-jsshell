@@ -357,10 +357,9 @@ sdl.onmouseup=function(mx,my){print("mouseup")};
 
 sdl.sdl_init=function(width,height,init,render){
   var _=this;
-  _.frame_interval=17; // aim for approx 60 frames per second.
-                       // Annoyingly the interval SDL_AddTimer takes is an
-                       // integer number of ms which means you cannot
-                       // represent 1000/60 (16.6666....). 
+  _.frame_interval=20; // this defines the time between each frame (ms). 
+                       // 1/frame_interval gives us our target frames per second.
+                       // Annoyingly this must be a multiple of 10 
   _.width=width;
   _.height=height;
   _.running=true;
@@ -384,6 +383,9 @@ sdl.sdl_init=function(width,height,init,render){
   _.last_frame_time=Date.now();
   _.fps_framecount=0;
   _.fps_timerstart=Date.now();
+  // [better-timer] later I am going to need to include SDL_AddTimer to start
+  // out background timer, just dropping some code here as a placeholder
+  // sdl.SDL_AddTimer(_.frame_interval,_.cb,_.voidptr);
 }
 
 
@@ -391,7 +393,7 @@ sdl.sdl_init=function(width,height,init,render){
 sdl.wait_for_next_frame=function(){
   var _=this;
   var now;
-  while(((now=Date.now())-_.last_frame_time)<20){};
+  while(((now=Date.now())-_.last_frame_time)<_.frame_interval){};
   _.last_frame_time=now;
 };
 
@@ -409,24 +411,16 @@ sdl.update_framerate=function(){
 
 sdl.sdl_mainloop=function(){
   var _=this;
-  sdl.SDL_AddTimer(_.frame_interval,_.cb,_.voidptr); // schedule first frame to be drawn 
   while(_.running){
-    _.SDL_WaitEvent(_.event_raw);
-    _.process_event(); 
     while(_.SDL_PollEvent(_.event_raw)){
       _.process_event(); 
     };
-    if(_.draw_frame){
-      sdl.SDL_AddTimer(_.frame_interval,_.cb,_.voidptr); // schedule another
-                                                         // frame event callback
-                                                         // in frame_interval ms
-      if(_.render(_)){ // only actually flip buffers if we have painted a frame
-        libc.memcpy(_.cpixels,_.pixels_raw,_.pixels.length);
-        _.SDL_Flip(_.surface); 
-      }
-      _.draw_frame=false; // reset draw_frame
-      _.update_framerate();
+    if(_.render(_)){ // only actually flip buffers if we have painted a frame
+      libc.memcpy(_.cpixels,_.pixels_raw,_.pixels.length);
+      _.SDL_Flip(_.surface); 
     }
+    _.update_framerate();
+    _.wait_for_next_frame();
   };
   _.SDL_Quit();
 
