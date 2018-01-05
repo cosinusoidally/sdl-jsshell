@@ -354,6 +354,18 @@ sdl.onmousemove=function(mx,my){print("mousemove:"+mx+","+my)};
 sdl.onmousedown=function(){print("mousedown")};
 sdl.onmouseup=function(mx,my){print("mouseup")};
 
+libcb={};
+libcb.lib=ctypes.open("libcb.so");
+libcb.init=libcb.lib.declare("init",ctypes.default_abi, ctypes.void_t);
+libcb.getmut=libcb.lib.declare("getmut",ctypes.default_abi, ctypes.voidptr_t);
+libcb.getcond=libcb.lib.declare("getcond",ctypes.default_abi, ctypes.voidptr_t);
+
+// note that this is the wrong signature for libcb.cb, I only ever use its
+// address and never call it from JS so it doesn't matter.
+libcb.cb=libcb.lib.declare("cb",ctypes.default_abi, ctypes.void_t);
+
+libcb.cond=libcb.getcond();
+libcb.mut=libcb.getmut();
 
 sdl.sdl_init=function(width,height,init,render){
   var _=this;
@@ -383,19 +395,23 @@ sdl.sdl_init=function(width,height,init,render){
   _.last_frame_time=Date.now();
   _.fps_framecount=0;
   _.fps_timerstart=Date.now();
-  // [better-timer] later I am going to need to include SDL_AddTimer to start
-  // out background timer, just dropping some code here as a placeholder
+  sdl.SDL_mutexP(libcb.mut); // lock the mutex
   sdl.SDL_AddTimer(_.frame_interval,libcb.cb,_.voidptr);
 }
 
 
-
+/*
 sdl.wait_for_next_frame=function(){
   var _=this;
   var now;
   while(((now=Date.now())-_.last_frame_time)<_.frame_interval){};
   _.last_frame_time=now;
 };
+*/
+
+sdl.wait_for_next_frame=function(){
+  sdl.SDL_CondWait(libcb.cond,libcb.mut);
+}
 
 sdl.update_framerate=function(){
   var _=this;
@@ -409,18 +425,6 @@ sdl.update_framerate=function(){
   };
 }
 
-libcb={};
-libcb.lib=ctypes.open("libcb.so");
-libcb.init=libcb.lib.declare("init",ctypes.default_abi, ctypes.void_t);
-libcb.getmut=libcb.lib.declare("getmut",ctypes.default_abi, ctypes.voidptr_t);
-libcb.getcond=libcb.lib.declare("getcond",ctypes.default_abi, ctypes.voidptr_t);
-
-// note that this is the wrong signature for libcb.cb, I only ever use its
-// address and never call it from JS so it doesn't matter.
-libcb.cb=libcb.lib.declare("cb",ctypes.default_abi, ctypes.void_t);
-
-libcb.cond=libcb.getcond();
-libcb.mut=libcb.getmut();
 
 sdl.sdl_mainloop=function(){
   var _=this;

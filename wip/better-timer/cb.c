@@ -21,4 +21,5 @@ SDL_mutex* getmut(void){
 Uint32 cb(Uint32 interval, void *param){
   printf("c"); // just debugging
   SDL_CondSignal(cond);
+  return interval;
 }
