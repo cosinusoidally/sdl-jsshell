@@ -100,15 +100,10 @@ DONE
   frame rate is now a fairly stable 50Hz (but I am currently polling for time,
   which might explain that).
   
-
-IN-PROGRESS
-===========
-
 * Create a shared library written in C that is our timer callback. Also add to
- this library some auxilary code to create out muxtex and cond var
-
-TODO
-====
+  this library some auxilary code to create out muxtex and cond var
+  
+  I've called the library libcb (for lib callback).
 
 * Write code to load in our shared library, bind it to JS and run init function
 * start callback timer running
@@ -122,6 +117,9 @@ TODO
 
 * Reimplement wait to use SDL_CondWait
 
+IN-PROGRESS
+===========
+
 * move creation of mutex and condition variable into JS ie bind and call:
 
   SDL_CreateMutex
@@ -129,6 +127,10 @@ TODO
 
   The cond var and mutex are just void pointers. I'll need to malloc some storage
   for these since otherwise Spidermonkey could move them around.
+
+TODO
+====
+
 
 * Replace our shared library with small chunks of machine code that are loaded
   and patched up by JS (this is to avoid depending on needing a C compiler, or
