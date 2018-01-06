@@ -125,9 +125,6 @@ IN-PROGRESS
   SDL_CreateMutex
   SDL_CreateCond
 
-  The cond var and mutex are just void pointers. I'll need to malloc some storage
-  for these since otherwise Spidermonkey could move them around.
-
 TODO
 ====
 
