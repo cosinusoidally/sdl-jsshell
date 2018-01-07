@@ -4,7 +4,7 @@
 SDL_mutex *mut;
 SDL_cond *cond;
 
-void init(void){
+void initc(void){
   mut=SDL_CreateMutex();
   cond=SDL_CreateCond();
 }

@@ -356,7 +356,7 @@ sdl.onmouseup=function(mx,my){print("mouseup")};
 
 libcb={};
 libcb.lib=ctypes.open("libcb.so");
-libcb.init=libcb.lib.declare("init",ctypes.default_abi, ctypes.void_t);
+libcb.initc=libcb.lib.declare("initc",ctypes.default_abi, ctypes.void_t);
 libcb.getmut=libcb.lib.declare("getmut",ctypes.default_abi, ctypes.voidptr_t);
 libcb.getcond=libcb.lib.declare("getcond",ctypes.default_abi, ctypes.voidptr_t);
 
@@ -364,7 +364,7 @@ libcb.getcond=libcb.lib.declare("getcond",ctypes.default_abi, ctypes.voidptr_t);
 // address and never call it from JS so it doesn't matter.
 libcb.cb=libcb.lib.declare("cb",ctypes.default_abi, ctypes.void_t);
 
-libcb.init();
+libcb.initc();
 libcb.cond=libcb.getcond();
 libcb.mut=libcb.getmut();
 
