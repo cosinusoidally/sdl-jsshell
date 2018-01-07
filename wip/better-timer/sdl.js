@@ -364,9 +364,18 @@ libcb.getcond=libcb.lib.declare("getcond",ctypes.default_abi, ctypes.voidptr_t);
 // address and never call it from JS so it doesn't matter.
 libcb.cb=libcb.lib.declare("cb",ctypes.default_abi, ctypes.void_t);
 
+libcb.init=function(){
+  libcb.mut=sdl.SDL_CreateMutex();
+}
+
+// init JS side code
+libcb.init();
+// init C side code
 libcb.initc();
 libcb.cond=libcb.getcond();
-libcb.mut=libcb.getmut();
+// libcb.mut=libcb.getmut();
+
+print(libcb.mut);
 
 sdl.sdl_init=function(width,height,init,render){
   var _=this;

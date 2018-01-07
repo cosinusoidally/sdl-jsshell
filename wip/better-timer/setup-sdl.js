@@ -79,7 +79,7 @@ sdl.SDL_mutexP=sdl.lib.declare("SDL_mutexP", ctypes.default_abi, ctypes.int, cty
 sdl.SDL_CondWait=sdl.lib.declare("SDL_CondWait", ctypes.default_abi, ctypes.int, ctypes.voidptr_t, ctypes.voidptr_t);
 
 // SDL_mutex *SDL_CreateMutex(void);
-sdl.SDL_CreateMutex=sdl.lib.declare("SDL_CreateMutex", ctypes.default_abi, ctypes.void_t);
+sdl.SDL_CreateMutex=sdl.lib.declare("SDL_CreateMutex", ctypes.default_abi, ctypes.voidptr_t);
 
 // SDL_cond *SDL_CreateCond(void);
-sdl.SDL_CreateCond=sdl.lib.declare("SDL_CreateCond", ctypes.default_abi, ctypes.void_t);
+sdl.SDL_CreateCond=sdl.lib.declare("SDL_CreateCond", ctypes.default_abi, ctypes.voidptr_t);
