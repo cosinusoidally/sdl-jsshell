@@ -357,8 +357,6 @@ sdl.onmouseup=function(mx,my){print("mouseup")};
 libcb={};
 libcb.lib=ctypes.open("libcb.so");
 libcb.initc=libcb.lib.declare("initc",ctypes.default_abi, ctypes.void_t);
-libcb.getmut=libcb.lib.declare("getmut",ctypes.default_abi, ctypes.voidptr_t);
-libcb.getcond=libcb.lib.declare("getcond",ctypes.default_abi, ctypes.voidptr_t);
 libcb.setcond=libcb.lib.declare("setcond",ctypes.default_abi, ctypes.void_t, ctypes.voidptr_t);
 
 // note that this is the wrong signature for libcb.cb, I only ever use its
@@ -369,16 +367,9 @@ libcb.init=function(){
   libcb.mut=sdl.SDL_CreateMutex();
   libcb.cond=sdl.SDL_CreateCond();
   libcb.setcond(libcb.cond);
+  sdl.SDL_mutexP(libcb.mut); // lock the mutex
 }
 
-// init JS side code
-libcb.init();
-// init C side code
-// libcb.initc();
-// libcb.cond=libcb.getcond();
-// libcb.mut=libcb.getmut();
-
-print(libcb.mut);
 
 sdl.sdl_init=function(width,height,init,render){
   var _=this;
@@ -408,7 +399,7 @@ sdl.sdl_init=function(width,height,init,render){
   _.last_frame_time=Date.now();
   _.fps_framecount=0;
   _.fps_timerstart=Date.now();
-  sdl.SDL_mutexP(libcb.mut); // lock the mutex
+  libcb.init(); // initialise our callback library
   sdl.SDL_AddTimer(_.frame_interval,libcb.cb,_.voidptr);
 }
 
