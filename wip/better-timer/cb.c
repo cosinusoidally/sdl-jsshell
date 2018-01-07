@@ -16,6 +16,10 @@ SDL_mutex* getmut(void){
   return mut;
 }
 
+void setcond(SDL_cond* c){
+  cond=c;
+}
+
 // Uint32 (*SDL_NewTimerCallback)(Uint32 interval, void *param);
 
 Uint32 cb(Uint32 interval, void *param){
