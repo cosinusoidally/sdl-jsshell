@@ -1,3 +1,4 @@
+// build with gcc -fomit-frame-pointer -O2 -c -fno-stack-protector -g cb-snippet-32bit.c
 #include <SDL/SDL.h>
 #include <SDL/SDL_thread.h>
 

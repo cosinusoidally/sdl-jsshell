@@ -11,47 +11,28 @@ for this specific case it works fine.
 
 
 libcb.cb_bin=[
-//  a.o:     file format pe-i386
+// $ objdump -d cb-snippet-32bit.o 
 
-//  Disassembly of section .text:
+//cb-snippet-32bit.o:     file format elf32-i386
 
-//  00000000 <_my_SDL_NewTimerCallback>:
 
-//  0:   83 ec 3c                sub    $0x3c,%esp
-         0xCC,0xec,0x3c,
+// Disassembly of section .text:
 
-//  3:   8d 44 24 18             lea    0x18(%esp),%eax
-         0x8d,0x44,0x24,0x18,
-
-//  7:   c6 44 24 18 18          movb   $0x18,0x18(%esp)
-         0xc6,0x44,0x24,0x18,0x18,
-
-//  c:   89 04 24                mov    %eax,(%esp)
-         0x89,0x04,0x24,
-
-//  f:   b8 ef be ad de          mov    $0xdeadbeef,%eax
-         0xb8,0xef,0xbe,0xad,0xde,
-
-// 14:   ff d0                   call   *%eax
-         0xff,0xd0, 
-
-// 16:   31 c0                   xor    %eax,%eax
-         0x31,0xc0,
-
-// 18:   83 c4 3c                add    $0x3c,%esp
-         0x83,0xc4,0x3c, 
-
-// 1b:   c3                      ret    
-         0xc3
-
-// 1c:   90                      nop
-
-// 1d:   90                      nop
-
-// 1e:   90                      nop
-
-// 1f:   90                      nop
-
+// 00000000 <cb>:
+//   0:	83 ec 18             	sub    $0x18,%esp
+  0x83,0xec,0x18,
+//   3:	b8 ef be ad de       	mov    $0xdeadbeef,%eax
+  0xb8,0xef,0xbe,0xad,0xde,
+//   8:	68 ef cd ab 01       	push   $0x1abcdef
+  0x68,0xef,0xcd,0xab,0x01,
+//   d:	ff d0                	call   *%eax
+  0xff,0xd0,
+//   f:	8b 44 24 20          	mov    0x20(%esp),%eax
+  0x8b,0x44,0x24,0x20,
+//  13:	83 c4 1c             	add    $0x1c,%esp
+  0x83,0xc4,0x1c,
+//  16:	c3                   	ret    
+  0xc3
 ];
 
 libcb.cb_raw=new ArrayBuffer(libcb.cb_bin.length);
@@ -71,11 +52,18 @@ libcb.cb_raw=new ArrayBuffer(libcb.cb_bin.length);
 // First we must get the address of SDL_PushEvent
 
 sdl.address_SDL_CondSignal=ctypes.cast(sdl.SDL_CondSignal,ctypes.uint8_t.array(4));
+libcb.address_cond=ctypes.cast(libcb.cond,ctypes.uint8_t.array(4));
 
-// Now patch the address of SDL_PushEvent in to the relevant offset into sdl.cb_bin
+// Now patch the address of SDL_CondSignal in to the relevant offset into libcb.cb_bin
 (function(){
   for(var i=0;i<4;i++){
-    libcb.cb_bin[i+0x10]=sdl.address_SDL_CondSignal[i];  
+    libcb.cb_bin[i+0x4]=sdl.address_SDL_CondSignal[i];
+ }
+})();
+// Patch in address of cond var
+(function(){
+  for(var i=0;i<4;i++){
+    libcb.cb_bin[i+0x9]=libcb.address_cond[i];
  }
 })();
 // We will allocate 4096 bytes (intended to be the memory page size ... I think
