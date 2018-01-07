@@ -7,8 +7,9 @@ libcb.setcond=libcb.lib.declare("setcond",ctypes.default_abi, ctypes.void_t, cty
 libcb.cb=libcb.lib.declare("cb",ctypes.default_abi, ctypes.void_t);
 
 libcb.init=function(){
-  libcb.mut=sdl.SDL_CreateMutex();
-  libcb.cond=sdl.SDL_CreateCond();
-  libcb.setcond(libcb.cond);
+  var _=this;
+  _.mut=sdl.SDL_CreateMutex();
+  _.cond=sdl.SDL_CreateCond();
+  _.setcond(libcb.cond);
   sdl.SDL_mutexP(libcb.mut); // lock the mutex
 }
