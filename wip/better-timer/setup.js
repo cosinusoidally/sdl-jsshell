@@ -100,8 +100,6 @@ if(sdl.system==="linux-i686"){
   
   // setup sdl (common code) 
   load("setup-sdl.js");
-  // Next we must set up the linux-i686 machine code required:
-  load("setup-linux-i686.js");
 };
 if(sdl.system==="linux-x86_64"){
   // This is system specific setup code

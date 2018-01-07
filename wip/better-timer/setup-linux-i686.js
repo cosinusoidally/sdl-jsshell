@@ -10,7 +10,7 @@ for this specific case it works fine.
 */
 
 
-sdl.cb_bin=[
+libcb.cb_bin=[
 //  a.o:     file format pe-i386
 
 //  Disassembly of section .text:
@@ -18,7 +18,7 @@ sdl.cb_bin=[
 //  00000000 <_my_SDL_NewTimerCallback>:
 
 //  0:   83 ec 3c                sub    $0x3c,%esp
-         0x83,0xec,0x3c,
+         0xCC,0xec,0x3c,
 
 //  3:   8d 44 24 18             lea    0x18(%esp),%eax
          0x8d,0x44,0x24,0x18,
@@ -54,34 +54,34 @@ sdl.cb_bin=[
 
 ];
 
-sdl.cb_raw=new ArrayBuffer(sdl.cb_bin.length);
+libcb.cb_raw=new ArrayBuffer(libcb.cb_bin.length);
 
 // convert sdl.cb_bin in to a Uint8Array view onto sdl.cb_raw
 
 (function(){
- var o=new Uint8Array(sdl.cb_raw);
-  for(var i=0;i<sdl.cb_bin.length;i++){
-    o[i]=sdl.cb_bin[i];
+ var o=new Uint8Array(libcb.cb_raw);
+  for(var i=0;i<libcb.cb_bin.length;i++){
+    o[i]=libcb.cb_bin[i];
   }
-  sdl.cb_bin=o;
+  libcb.cb_bin=o;
 })();
 
 // We now need to patch in the address of SDL_PushEvent.
 
 // First we must get the address of SDL_PushEvent
 
-sdl.address_SDL_PushEvent=ctypes.cast(sdl.SDL_PushEvent,ctypes.uint8_t.array(4));
+sdl.address_SDL_CondSignal=ctypes.cast(sdl.SDL_CondSignal,ctypes.uint8_t.array(4));
 
 // Now patch the address of SDL_PushEvent in to the relevant offset into sdl.cb_bin
 (function(){
   for(var i=0;i<4;i++){
-    sdl.cb_bin[i+0x10]=sdl.address_SDL_PushEvent[i];  
+    libcb.cb_bin[i+0x10]=sdl.address_SDL_CondSignal[i];  
  }
 })();
 // We will allocate 4096 bytes (intended to be the memory page size ... I think
 // that's the size of a page on Linux).
 
-sdl.cb=libc.mmap(                       sdl.voidptr,
+libcb.cb=libc.mmap(                       sdl.voidptr,
                                                4096,
   libc.PROT_READ | libc.PROT_WRITE | libc.PROT_EXEC,
               libc.MAP_ANONYMOUS | libc.MAP_PRIVATE,
@@ -90,4 +90,4 @@ sdl.cb=libc.mmap(                       sdl.voidptr,
 
 // Next we copy our machine code in to our sdl.cb buffer.
 // surely it should be sdl.cb_raw???????
-libc.memcpy(sdl.cb,sdl.cb_bin,sdl.cb_bin.length);
+libc.memcpy(libcb.cb,libcb.cb_raw,libcb.cb_bin.length);

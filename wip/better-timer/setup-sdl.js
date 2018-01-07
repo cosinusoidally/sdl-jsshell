@@ -83,3 +83,7 @@ sdl.SDL_CreateMutex=sdl.lib.declare("SDL_CreateMutex", ctypes.default_abi, ctype
 
 // SDL_cond *SDL_CreateCond(void);
 sdl.SDL_CreateCond=sdl.lib.declare("SDL_CreateCond", ctypes.default_abi, ctypes.voidptr_t);
+
+// int SDL_CondSignal(SDL_cond *cond);
+sdl.SDL_CondSignal=sdl.lib.declare("SDL_CondSignal", ctypes.default_abi, ctypes.int, ctypes.voidptr_t);
+
