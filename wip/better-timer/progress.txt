@@ -117,22 +117,21 @@ DONE
 
 * Reimplement wait to use SDL_CondWait
 
-IN-PROGRESS
-===========
-
 * move creation of mutex and condition variable into JS ie bind and call:
 
   SDL_CreateMutex
   SDL_CreateCond
 
-TODO
-====
-
+IN-PROGRESS
+===========
 
 * Replace our shared library with small chunks of machine code that are loaded
   and patched up by JS (this is to avoid depending on needing a C compiler, or
   the need to distribute a binary .dll or .so file). This will be done in much
   the same way as v0.0.2 does it for its timer callbacks.
+
+TODO
+====
 
 * Proofread all the documentation and update it to reflect what the code actually
   does.
