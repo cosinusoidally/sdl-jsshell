@@ -1,6 +1,5 @@
 libcb={};
 libcb.lib=ctypes.open("libcb.so");
-libcb.initc=libcb.lib.declare("initc",ctypes.default_abi, ctypes.void_t);
 libcb.setcond=libcb.lib.declare("setcond",ctypes.default_abi, ctypes.void_t, ctypes.voidptr_t);
 
 // note that this is the wrong signature for libcb.cb, I only ever use its
