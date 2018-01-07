@@ -354,22 +354,7 @@ sdl.onmousemove=function(mx,my){print("mousemove:"+mx+","+my)};
 sdl.onmousedown=function(){print("mousedown")};
 sdl.onmouseup=function(mx,my){print("mouseup")};
 
-libcb={};
-libcb.lib=ctypes.open("libcb.so");
-libcb.initc=libcb.lib.declare("initc",ctypes.default_abi, ctypes.void_t);
-libcb.setcond=libcb.lib.declare("setcond",ctypes.default_abi, ctypes.void_t, ctypes.voidptr_t);
-
-// note that this is the wrong signature for libcb.cb, I only ever use its
-// address and never call it from JS so it doesn't matter.
-libcb.cb=libcb.lib.declare("cb",ctypes.default_abi, ctypes.void_t);
-
-libcb.init=function(){
-  libcb.mut=sdl.SDL_CreateMutex();
-  libcb.cond=sdl.SDL_CreateCond();
-  libcb.setcond(libcb.cond);
-  sdl.SDL_mutexP(libcb.mut); // lock the mutex
-}
-
+load("cb.js"); // load libcb
 
 sdl.sdl_init=function(width,height,init,render){
   var _=this;
