@@ -54,3 +54,4 @@ libcb.address_cond=ctypes.cast(libcb.cond,ctypes.uint8_t.array(4));
     libcb.cb_bin[i+0x9]=libcb.address_cond[i];
  }
 })();
+libc.memcpy(libcb.cb,libcb.cb_raw,libcb.cb_bin.length);

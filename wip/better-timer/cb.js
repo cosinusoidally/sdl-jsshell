@@ -5,6 +5,9 @@ libcb.syssetup=function(){
     libcb.setcond=function(){}; // just a dummy function
     // Next we must set up the linux-i686 machine code required:
     load("setup-linux-i686.js");
+  } else if(sdl.system==="win32"){
+    libcb.setcond=function(){}; // just a dummy function
+    load("setup-win32.js");
   } else {
     // try to load generic libcb library
     libcb.lib=ctypes.open("libcb.so");

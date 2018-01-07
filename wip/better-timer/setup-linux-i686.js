@@ -9,7 +9,6 @@ for this specific case it works fine.
 
 */
 
-load("i686-common.js");
 // We will allocate 4096 bytes (intended to be the memory page size ... I think
 // that's the size of a page on Linux).
 
@@ -20,6 +19,4 @@ libcb.cb=libc.mmap(                       sdl.voidptr,
                                                   0,
                                                   0);
 
-// Next we copy our machine code in to our sdl.cb buffer.
-// surely it should be sdl.cb_raw???????
-libc.memcpy(libcb.cb,libcb.cb_raw,libcb.cb_bin.length);
+load("i686-common.js");
