@@ -120,8 +120,6 @@ if(sdl.system==="linux-x86_64"){
   
   // setup sdl (common code) 
   load("setup-sdl.js");
-  // Next we must set up the x86_64 machine code required:
-  load("setup-linux-x86_64.js");
 };
 
 if(sdl.system==="win32"){

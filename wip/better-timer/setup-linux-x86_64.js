@@ -1,129 +1,79 @@
-/*
+libcb.cb_bin=[
+//$ objdump -d -S cb-snippet-64bit.o 
 
-In _.cb we must store a pointer to a function to be called by SDL_AddTimer
-whenever a timer fires. _.cb will be the location of an executable mmapped
-buffer. We must fill that buffer with the required machine code. To do this we
-will create and disassemble a C function:
-
-#include <stdint.h>
-
-typedef int (*my_SDL_PushEvent)(char *);
+//cb-snippet-64bit.o:     file format elf64-x86-64
 
 
-uint32_t my_SDL_NewTimerCallback(uint32_t interval,void *param){
-  char a[24];
-  a[0]=24;
-  // This is the absolute address SDL_PushEvent, we need to patch in this value
-  // at runtime.
-  ((my_SDL_PushEvent)0xdeadbeefdeadbeef)(a); 
-  return 0;
-}
+//Disassembly of section .text:
 
-Note that the signatures for my_SDL_PushEvent and my_SDL_NewTimerCallback match
-SDL_PushEvent and SDL_NewTimerCallback respectively.
+//0000000000000000 <cb>:
 
-We then build the object code as follows:
+// // int SDL_CondSignal(SDL_cond *cond);
+//typedef int (* my_SDL_CondSignal)(SDL_cond *cond);
+// // Uint32 (*SDL_NewTimerCallback)(Uint32 interval, void *param);
 
-gcc -fomit-frame-pointer -O2 -c -fno-stack-protector cb.c
+// Uint32 cb(Uint32 interval, void *param){
+//   0:	53                   	push   %rbx
+	0x53,
+//   1:	89 fb                	mov    %edi,%ebx
+        0x89,0xfb,
+//  ((my_SDL_CondSignal)0xdeadbeefdeadbeef)(0x1234567890abcdef);
+//   3:	48 b8 ef be ad de ef 	movabs $0xdeadbeefdeadbeef,%rax
+	0x48, 0xb8, 0xef, 0xbe, 0xad, 0xde, 0xef,
+//   a:	be ad de 
+	0xbe, 0xad, 0xde, 
+//   d:	48 bf ef cd ab 90 78 	movabs $0x1234567890abcdef,%rdi
+	0x48, 0xbf, 0xef, 0xcd, 0xab, 0x90, 0x78,
+//  14:	56 34 12 
+	0x56, 0x34, 0x12, 
+//  17:	ff d0                	callq  *%rax
+	0xff, 0xd0, 
+//  return interval;
+//}
+//  19:	89 d8                	mov    %ebx,%eax
+	0x89, 0xd8,
+//  1b:	5b                   	pop    %rbx
+	0x5b,
+//  1c:	c3                   	retq   
+	0xc3];
 
-Note the -fno-stack-protector flag. That is to prevent gcc from emitting a
-bunch of unnecessary code.
+libcb.cb_raw=new ArrayBuffer(libcb.cb_bin.length);
 
-We then use objdump to disassemble the function:
-
-objdump -D cb.o
-
-cb.o:     file format elf64-x86-64
-
-
-Disassembly of section .text:
-
-0000000000000000 <my_SDL_NewTimerCallback>:
-   0:   48 83 ec 28             sub    $0x28,%rsp
-   4:   48 b8 ef be ad de ef    movabs $0xdeadbeefdeadbeef,%rax
-   b:   be ad de 
-   e:   c6 04 24 18             movb   $0x18,(%rsp)
-  12:   48 89 e7                mov    %rsp,%rdi
-  15:   ff d0                   callq  *%rax
-  17:   31 c0                   xor    %eax,%eax
-  19:   48 83 c4 28             add    $0x28,%rsp
-  1d:   c3                      retq   
-
-The above also gives us a hex dump of the function. We can convert this to an
-array and add it to our sdl object.
-*/
-
-sdl.cb_bin=[
-//0000000000000000 <my_SDL_NewTimerCallback>:
-//   0:   48 83 ec 28             sub    $0x28,%rsp
-          0x48,0x83,0xec,0x28,
-//   4:   48 b8 ef be ad de ef    movabs $0xdeadbeefdeadbeef,%rax
-          0x48,0xb8,0xef,0xbe,0xad,0xde,0xef,
-//   b:   be ad de 
-          0xbe,0xad,0xde, 
-//   e:   c6 04 24 18             movb   $0x18,(%rsp)
-          0xc6,0x04,0x24,0x18,
-//  12:   48 89 e7                mov    %rsp,%rdi
-          0x48,0x89,0xe7,
-//  15:   ff d0                   callq  *%rax
-          0xff,0xd0,
-//  17:   31 c0                   xor    %eax,%eax
-          0x31,0xc0,
-//  19:   48 83 c4 28             add    $0x28,%rsp
-          0x48,0x83,0xc4,0x28,
-//  1d:   c3                      retq   
-          0xc3];
-
-sdl.cb_raw=new ArrayBuffer(sdl.cb_bin.length);
-
-// convert sdl.cb_bin in to a Uint8Array view onto sdl.cb_raw
+// convert libcb.cb_bin in to a Uint8Array view onto libcb.cb_raw
 
 (function(){
- var o=new Uint8Array(sdl.cb_raw);
-  for(var i=0;i<sdl.cb_bin.length;i++){
-    o[i]=sdl.cb_bin[i];
+ var o=new Uint8Array(libcb.cb_raw);
+  for(var i=0;i<libcb.cb_bin.length;i++){
+    o[i]=libcb.cb_bin[i];
   }
-  sdl.cb_bin=o;
+  libcb.cb_bin=o;
 })();
 
-// We now need to patch in the address of SDL_PushEvent.
 
-// First we must get the address of SDL_PushEvent
+// First we must get the address of SDL_CondSignal and the condition variables
 
-sdl.address_SDL_PushEvent=ctypes.cast(sdl.SDL_PushEvent,ctypes.uint8_t.array(8));
+sdl.address_SDL_CondSignal=ctypes.cast(sdl.SDL_CondSignal,ctypes.uint8_t.array(8));
+libcb.address_cond=ctypes.cast(libcb.cond,ctypes.uint8_t.array(8));
 
-// Now patch the address of SDL_PushEvent in to the relevant offset into sdl.cb_bin
-// This is the relevant instruction
-//   4:   48 b8 ef be ad de ef    movabs $0xdeadbeefdeadbeef,%rax
-//   b:   be ad de
 
-// The movabs instruction is 2 bytes long in this case. That mean we must patch
-// 8 bytes from offset 6
+// patch in address of SDL_CondSignal
 
 (function(){
   for(var i=0;i<8;i++){
-    sdl.cb_bin[i+6]=sdl.address_SDL_PushEvent[i];
+    libcb.cb_bin[i+8]=sdl.address_SDL_CondSignal[i];
   }
 })();
 
-// Next we need some executable memory in to which we will copy our machine
-// code. We will create this with mmap.
+// patch in address off condition variable (libcb.address_cond)
 
-// mmap invocation from:
-// http://burnttoys.blogspot.co.uk/2011/04/how-to-allocate-executable-memory-on.html
 
-// mmap(
-//       NULL,
-//       codeBytes,
-//       PROT_READ | PROT_WRITE | PROT_EXEC,
-//       MAP_ANONYMOUS | MAP_PRIVATE,
-//       0,
-//       0);
+(function(){
+  for(var i=0;i<8;i++){
+    libcb.cb_bin[i+0xf]=libcb.address_cond[i];
+  }
+})();
 
-// We will allocate 4096 bytes (intended to be the memory page size ... I think
-// that's the size of a page on Linux).
-
-sdl.cb=libc.mmap(                       sdl.voidptr,
+libcb.cb=libc.mmap(                       sdl.voidptr,
                                                4096,
   libc.PROT_READ | libc.PROT_WRITE | libc.PROT_EXEC,
               libc.MAP_ANONYMOUS | libc.MAP_PRIVATE,
@@ -132,5 +82,5 @@ sdl.cb=libc.mmap(                       sdl.voidptr,
 
 
 // Next we copy our machine code in to our sdl.cb buffer.
-libc.memcpy(sdl.cb,sdl.cb_bin,sdl.cb_bin.length);
+libc.memcpy(libcb.cb,libcb.cb_raw,libcb.cb_bin.length);
 
