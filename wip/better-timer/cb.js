@@ -8,6 +8,9 @@ libcb.syssetup=function(){
   } else if(sdl.system==="win32"){
     libcb.setcond=function(){}; // just a dummy function
     load("setup-win32.js");
+  } else if(sdl.system==="linux-x86_64"){
+    libcb.setcond=function(){}; // just a dummy function
+    load("setup-linux-x86_64.js");
   } else {
     // try to load generic libcb library
     libcb.lib=ctypes.open("libcb.so");
