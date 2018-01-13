@@ -60,7 +60,7 @@ libcb.address_cond=ctypes.cast(libcb.cond,ctypes.uint8_t.array(8));
 
 (function(){
   for(var i=0;i<8;i++){
-    libcb.cb_bin[i+8]=sdl.address_SDL_CondSignal[i];
+    libcb.cb_bin[i+5]=sdl.address_SDL_CondSignal[i];
   }
 })();
 
