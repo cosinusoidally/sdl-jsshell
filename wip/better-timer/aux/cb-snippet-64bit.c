@@ -1,4 +1,6 @@
 // build with gcc -fomit-frame-pointer -O2 -c -fno-stack-protector -g cb-snippet-64bit.c
+// This file is only needed if you want to modify or regenerate the machine
+// code from setup-linux-x86_64.js
 #include <SDL/SDL.h>
 #include <SDL/SDL_thread.h>
 
