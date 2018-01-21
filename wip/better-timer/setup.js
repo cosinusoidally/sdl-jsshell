@@ -76,7 +76,7 @@ sdl.detect_system=function(){
 
 
 if(!sdl.detect_system()){
-  print("ERROR: Unsupported system");
+  print("ERROR: Unable to start. Either your system isn't set up correctly (see error messages above for further info), or your system is unsupported.");
   quit();
 };
 
