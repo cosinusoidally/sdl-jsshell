@@ -314,16 +314,27 @@ timer fires the machine code callback function will get called.
 The next question is what should the callback function do? The main loop needs
 to go to sleep and some how wake up when the timer fires.
 
+Lets take a look at the function that waits for the timer (exact definition is
+further down this file):
+
 sdl.wait_for_next_frame=function(){
   sdl.SDL_CondWait(libcb.cond,libcb.mut);
 }
 
-Exact
-implementation details are further down this document and in cb.js (see ).
+(libcb.mut must be locked, we do this is sdl.sdl_init, sdl.SDL_CondWait will
+temp unlock it, but it gets relocked when sdl.SDL_CondWait returns).
 
-The code also contains a polyfill C implementation (in cb.c) that
-can be used for systems that do not yet have a machine code version.
+Now SDL_CondWait will go to sleep until the corresponding call to
+SDL_CondSignal.  So our callback function will need to do something like:
 
+Uint32 cb(Uint32 interval, void *param){
+  SDL_CondSignal(cond); // this will be the same address as libcb.cond
+  return interval;
+}
+
+See polyfill C implementation in aux/cb.c
+
+Further dicussion about our implementation of the callback function is in cb.js
 
 The implementation
 ------------------
@@ -392,13 +403,13 @@ sdl.sdl_init=function(width,height,init,render){
   _.last_frame_time=Date.now();
   _.fps_framecount=0;
   _.fps_timerstart=Date.now();
-  libcb.init(); // initialise our callback library
+  libcb.init(); // initialise our callback library (from cb.js)
   sdl.SDL_AddTimer(_.frame_interval,libcb.cb,_.voidptr);
 }
 
 
 /* this was a temp polyfill for sdl.wait_for_next_frame
-   it is no longer needed.
+   it is no longer needed (hence commented out).
 sdl.wait_for_next_frame=function(){
   var _=this;
   var now;
