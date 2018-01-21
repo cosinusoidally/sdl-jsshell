@@ -18,7 +18,11 @@ direct link is:
 
 https://www.libsdl.org/release/SDL-1.2.15-win32.zip
 
-Extract both jsshell and SDL. Put the SDL.dll file in to the same directory as
+Extract both jsshell and SDL (to be on the safe side I'd also do a virus scan
+on SDL, eg here are the results (and SHA256 sum) from Virus Total
+https://www.virustotal.com/#/file/a28bbe38714ef7817b1c1e8082a48f391f15e4043402444b783952fca939edc1/detection).
+
+Put the SDL.dll file in to the same directory as
 js.exe
 
 You should then be able to run the test.js file using:
@@ -34,9 +38,8 @@ Just a quick word about WINE. This should work fine under WINE. I've tested and
 jsshell 45 works perfectly fine under WINE on Ubuntu 14.04. The only problem is
 if your version of jsshell is too new. I think everything above about jsshell
 54 won't work on the version of WINE that ships with Ubuntu 14.04. If you want
-to use the latest version of jsshell under WINE (which is jsshell 58.0b9 when
-this particular bit of text was written) you will need the latest devel version
-of WINE (it worked fine for me with WINE 2.22.something).
+to use the latest version of jsshell under WINE you will need the latest
+stable, or possibly devel version of WINE.
 
 */
 
@@ -44,7 +47,7 @@ of WINE (it worked fine for me with WINE 2.22.something).
 /*
 See also setup-linux-x86_64.js . This works in a very similar way.
 VirtualAlloc is an approximate win32 analogue of mmap. The machine code snippet
-used was generated with mingw on Linux.
+used was generated with GCC on Linux.
 */
 
 kernel32.lib=ctypes.open("Kernel32.dll");
@@ -62,4 +65,6 @@ kernel32.VirtualAlloc=kernel32.lib.declare("VirtualAlloc",ctypes.winapi_abi,ctyp
 kernel32.MEM_COMMIT=0x00001000;
 kernel32.PAGE_EXECUTE_READWRITE=0x40;
 libcb.cb=kernel32.VirtualAlloc(ctypes.voidptr_t(0),4096,kernel32.MEM_COMMIT,kernel32.PAGE_EXECUTE_READWRITE);
+
+// now load the common machine code
 load("i686-common.js");
