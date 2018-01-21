@@ -2,7 +2,8 @@
 
 This file autodetects the current platform and sets up the required machine
 specific functions. Once it has done that it will then set up SDL by loading
-setup-sdl.js
+setup-sdl.js. At the end of this file we load libcb (see cb.js). libcb is where
+we load and setup our timer callback function.
 
 First we must load the SDL library and define the required functions. We will
 also need to load libc (for memcpy and mmap).

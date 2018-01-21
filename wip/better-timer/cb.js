@@ -12,7 +12,10 @@ libcb.syssetup=function(){
     libcb.setcond=function(){}; // just a dummy function
     load("setup-linux-x86_64.js");
   } else {
-    // try to load generic libcb library
+    // try to load generic libcb library (this is only if all else fails).
+    // I've just left this bit here in case someone wants to begin a port
+    // to MacOS or something. All the currently supported platforms already
+    // have machine code versions of the callback
     libcb.lib=ctypes.open("libcb.so");
     libcb.setcond=libcb.lib.declare("setcond",ctypes.default_abi, ctypes.void_t, ctypes.voidptr_t);
 
