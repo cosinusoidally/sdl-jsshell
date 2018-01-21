@@ -135,7 +135,7 @@ libc.memcpy(libcb.cb,libcb.cb_raw,libcb.cb_bin.length);
 For security purposes we should now mprotect the memory to make it read only
 and executable, but for now we just leave it as executable and read/writable.
 
-Speficially we should initially map the memory as r/w. Copy across the machine
+Speficially we should initially map the memory as r/w, copy across the machine
 code, and then mprotect the memory to make it execute only.
 
 It's not a major risk at the moment (since we are not running untrusted JS code),
