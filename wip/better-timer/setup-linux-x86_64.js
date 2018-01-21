@@ -105,7 +105,7 @@ With this offset we then patch in address of SDL_CondSignal
 Now, the 0x1234567890abcdef above needs to be the address of our Condition Variable.
 As we can see, the offset of 0x1234567890abcdef is 0xf
 
-Patch in address off condition variable (libcb.address_cond):
+Patch in address of condition variable (libcb.address_cond):
 
 */
 (function(){
