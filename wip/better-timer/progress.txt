@@ -122,16 +122,17 @@ DONE
   SDL_CreateMutex
   SDL_CreateCond
 
-IN-PROGRESS
-===========
-
 * Replace our shared library with small chunks of machine code that are loaded
   and patched up by JS (this is to avoid depending on needing a C compiler, or
   the need to distribute a binary .dll or .so file). This will be done in much
   the same way as v0.0.2 does it for its timer callbacks.
 
-TODO
-====
+IN-PROGRESS
+===========
 
 * Proofread all the documentation and update it to reflect what the code actually
   does.
+
+TODO
+====
+
