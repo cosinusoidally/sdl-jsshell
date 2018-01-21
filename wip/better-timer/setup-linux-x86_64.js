@@ -3,8 +3,8 @@
 In this file we load and setup our timer callback function for linux-x86_64.
 
 First we need some machine code. We generate the machine code by compiling
-cb-snippet-64bit.c . This gives us cb-snippet-64bit.o . We then disasseble the
-machine code with objdump and use it to create at libcb.cb_bin array containing
+cb-snippet-64bit.c . This gives us cb-snippet-64bit.o . We then disassemble the
+machine code with objdump and use it to create our libcb.cb_bin array containing
 the machine code.
 
 See below for the current version of our machine code:
@@ -66,13 +66,13 @@ libcb.cb_raw=new ArrayBuffer(libcb.cb_bin.length);
   libcb.cb_bin=o;
 })();
 
-// At this point libcb.cb_raw is our ArrayBuffer and libcb.cb_bin is now
-// a Uint8Array view onto that ArrayBuffer.
-
 /*
 
+At this point libcb.cb_raw is our ArrayBuffer and libcb.cb_bin is now
+a Uint8Array view onto that ArrayBuffer.
 
-First we must get the address of SDL_CondSignal and the condition variables
+Next we get the address of SDL_CondSignal and the condition variables. We will
+need these addresses to patch our machine code.
 
 */
 
