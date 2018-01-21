@@ -1,3 +1,19 @@
+/*
+
+This provides functions to setup libcb, which contains our timer callback
+function.
+
+You'll see that we just check which platform we are on and then load the
+platform specific setup scripts. If you want to understand how the machine code
+loading and patching works setup-linux-x86_64.js is a good place to start.
+
+The implementation of setup-linux-i686.js and setup-win32.js are also
+interesting because they load exactly the same machine code (contained in
+i686-common.js).
+
+*/
+
+
 libcb={};
 
 libcb.syssetup=function(){
@@ -25,11 +41,16 @@ libcb.syssetup=function(){
   }
 }
 
+// This is to initialise the library. syssetup above sets up the machine
+// specific stuff.
+
 libcb.init=function(){
   var _=this;
   _.mut=sdl.SDL_CreateMutex();
   _.cond=sdl.SDL_CreateCond();
   _.syssetup();
-  _.setcond(libcb.cond);
+  _.setcond(libcb.cond); // This is only needed for the C version
+                         // all other version just replace this with
+                         // a dummy function that does nothing.
   sdl.SDL_mutexP(libcb.mut); // lock the mutex
 }
