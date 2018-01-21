@@ -1,3 +1,4 @@
+// to build use ./mk_cb
 #include <SDL/SDL.h>
 #include <SDL/SDL_thread.h>
 
