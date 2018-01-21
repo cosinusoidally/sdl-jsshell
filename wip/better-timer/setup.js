@@ -1,4 +1,9 @@
 /*
+
+This file autodetects the current platform and sets up the required machine
+specific functions. Once it has done that it will then set up SDL by loading
+setup-sdl.js
+
 First we must load the SDL library and define the required functions. We will
 also need to load libc (for memcpy and mmap).
 */
