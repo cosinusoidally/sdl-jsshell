@@ -293,27 +293,35 @@ different thread. If we do that we will crash (or corrupt memory or other bad
 things). This leaves us with a few options:
 
 * Write the callback in C, build it as a shared library and use jsctypes to
-  load it. When the callback is called it would use SDL_PushEvent to add a
-  event to the event queue to indicate that the timer event has fired.
+  load it.
 
   The disadvantage to this approach is that we would require a C compiler to be
   installed (or we would need to ship a shared library binary). Ideally I would
   like to avoid such a dependency.
 
-* Somehow generate some machine code at runtime and call it from
-  jsctypes. The generated machine code would need to call SDL_PushEvent to put
-  the time event into the event queue.
+* Somehow generate some machine code at runtime and hand a pointer to the
+  machine code to SDL_AddTimer
 
   The disadvantage to this approach is that we will require platform specific
   machine code.
 
 There are other options, but the above were the ones I considered. I decided to
 take the runtime machine code generation option. To do this I mmap some
-executable memory, generate some machine code into that memory, and then call
-in to that memory using jsctypes. Exact implementation details are further down
-this document.
+executable memory, generate some machine code into that memory, and then pass a
+pointer to that memory as the callback function for SDL_AddTimer. When the
+timer fires the machine code callback function will get called.
 
-The code also contains a polyfill implementation (in setup-polyfill.js) that
+The next question is what should the callback function do? The main loop needs
+to go to sleep and some how wake up when the timer fires.
+
+sdl.wait_for_next_frame=function(){
+  sdl.SDL_CondWait(libcb.cond,libcb.mut);
+}
+
+Exact
+implementation details are further down this document and in cb.js (see ).
+
+The code also contains a polyfill C implementation (in cb.c) that
 can be used for systems that do not yet have a machine code version.
 
 
@@ -389,7 +397,8 @@ sdl.sdl_init=function(width,height,init,render){
 }
 
 
-/*
+/* this was a temp polyfill for sdl.wait_for_next_frame
+   it is no longer needed.
 sdl.wait_for_next_frame=function(){
   var _=this;
   var now;
