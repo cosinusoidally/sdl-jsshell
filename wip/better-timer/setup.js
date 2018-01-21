@@ -132,3 +132,5 @@ if(sdl.system==="win32"){
   libc.memcpy= libc.lib.declare("memcpy",ctypes.default_abi,ctypes.voidptr_t,ctypes.voidptr_t, ctypes.voidptr_t,ctypes.uint32_t);
   load("setup-sdl.js");
 }
+
+load("cb.js"); // load libcb

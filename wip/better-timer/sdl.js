@@ -373,8 +373,6 @@ sdl.onmousemove=function(mx,my){print("mousemove:"+mx+","+my)};
 sdl.onmousedown=function(){print("mousedown")};
 sdl.onmouseup=function(mx,my){print("mouseup")};
 
-load("cb.js"); // load libcb
-
 sdl.sdl_init=function(width,height,init,render){
   var _=this;
   _.frame_interval=20; // this defines the time between each frame (ms). 
