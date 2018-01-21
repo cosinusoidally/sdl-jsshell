@@ -1,3 +1,12 @@
+/*
+
+Comments are a bit sparse in this file. Have a look at setup-linux-x86_64.js
+for a description of how the machine code is loaded and patched (principle is
+the same on all platforms).
+
+*/
+
+
 libcb.cb_bin=[
 // $ objdump -d cb-snippet-32bit.o 
 
@@ -35,9 +44,6 @@ libcb.cb_raw=new ArrayBuffer(libcb.cb_bin.length);
   libcb.cb_bin=o;
 })();
 
-// We now need to patch in the address of SDL_PushEvent.
-
-// First we must get the address of SDL_PushEvent
 
 sdl.address_SDL_CondSignal=ctypes.cast(sdl.SDL_CondSignal,ctypes.uint8_t.array(4));
 libcb.address_cond=ctypes.cast(libcb.cond,ctypes.uint8_t.array(4));

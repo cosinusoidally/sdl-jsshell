@@ -1,5 +1,8 @@
 /*
 
+See setup-linux-x86_64.js for a fuller description of this process. The
+principle is the same on all platforms.
+
 This sets up the machine code on linux-i686 note that the machine code is
 actually identical to the win32 version. This is because the cdecl calling
 convention used on win32 is very similar to the cdecl calling convention on
@@ -19,4 +22,6 @@ libcb.cb=libc.mmap(                       sdl.voidptr,
                                                   0,
                                                   0);
 
+
+// We then load the common i686 code in to the buffer
 load("i686-common.js");
