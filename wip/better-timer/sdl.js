@@ -418,10 +418,14 @@ sdl.wait_for_next_frame=function(){
 };
 */
 
+
+// See docs further up this file
 sdl.wait_for_next_frame=function(){
   sdl.SDL_CondWait(libcb.cond,libcb.mut);
 }
 
+
+// just a handy function to give us the current framerate
 sdl.update_framerate=function(){
   var _=this;
   _.fps_framecount++;
