@@ -1,3 +1,6 @@
+*** THIS WORK IS NOW COMPLETE. THIS FILE IS JUST HERE FOR INFORMATIONAL
+PURPOSES ***
+
 Purpose
 
 I just recently found out that SDL_WaitEvent has poor latency. This version
