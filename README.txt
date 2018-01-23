@@ -13,10 +13,10 @@ This code works on win32, linux-i686 and linux-x86_64
 
 directory structure:
 
-* demos/ this contains some demos of using the library
+* demos/ this contains some demo code using the library
 * lib/ this is where the current version lives
 * old-versions/ this contains an archive of old versions, plus possibly some
-  critique of those versins.
+  critique of those versions.
 * wip/ work in progress branch. Contains any experimental work in progress code
 
 (yes I could have used git branches and tags but I was getting bored of
