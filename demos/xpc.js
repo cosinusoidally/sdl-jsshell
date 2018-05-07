@@ -78,7 +78,7 @@ if(os==="Linux"){
   c=ctypes.open("libc.so.6");
 } else if(os==="WINNT"){
   try {
-    if(sys.is64bit){
+    if(sys.is64Bit){
       print("Error: 64 bit Windows not supported yet");
       print("Grab a 32 bit copy of Firefox, install it somewhere, and then use that.\n Note you can grab the installer exe and extract with 7zip (or similar) if you don't want to run the installer.");
       quit();
