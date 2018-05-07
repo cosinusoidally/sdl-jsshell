@@ -78,6 +78,11 @@ if(os==="Linux"){
   c=ctypes.open("libc.so.6");
 } else if(os==="WINNT"){
   try {
+    if(sys.is64bit){
+      print("Error: 64 bit Windows not supported yet");
+      print("Grab a 32 bit copy of Firefox, install it somewhere, and then use that.\n Note you can grab the installer exe and extract with 7zip (or similar) if you don't want to run the installer.");
+      quit();
+    };
     c=ctypes.open("msvcr120.dll");
   } catch(e){
     print("Couldn't load msvcr120.dll");
