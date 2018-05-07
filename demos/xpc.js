@@ -1,6 +1,70 @@
+/*
+
+Did you know that Firefox has a special mode that allows turns it in to a
+JavaScript shell [2]
+
+Try running the following [1]:
+
+firefox -xpcshell -i
+
+You get a JS REPL! This is really handy as it means that you can use the stock
+system copy of Firefox to run these demos (so long as Mozilla doesn't break
+xpcshell, if they do you can simply grab an old tarball (or the last working
+ESR) and use that).
+
+This is really handy as stock Firefox builds are much more widely available
+than jsshell builds. For example, if you're on Raspbian on a Raspberry PI
+you'll be able to get the latest ESR version of Firefox, but the latest version
+of jsshell is 24 (which is also totally bust on the latest version of Raspbian,
+see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=848190). Mozilla also do
+not ship official ARM versions of jsshell (or Firefox for that matter, but
+distros *do* ship up to date ARM versions of Firefox).
+
+This file has to do 2 things:
+
+* load the js-ctypes module
+
+* polyfill the jsshell "read" function, since xpcshell doesn't have it built in
+  (you can probably polyfill with some XPCOM API, but I've just used fopen,
+  fread, etc, from libc)
+
+[1] Note this also works on Windows, but for some reason it doesn't seem to
+work through cmd.exe. The work around I found was to run Firefox through the
+git-bash shell. Another (probably better) way is to grab a node.js binary (I
+used the win32 version of 0.10) and use child_process.spawn.
+
+[2] xpcshell is a test harness that Mozilla use to test (JS parts of) Firefox.
+Since Firefox 47 is it a standard component of Firefox release builds. The
+-xpcshell flag was added under
+https://bugzilla.mozilla.org/show_bug.cgi?id=1238769
+
+*/
+
+// load the js-ctypes module
 Components.utils.import("resource://gre/modules/ctypes.jsm");
+
+/*
+
+Polyfill the read function
+
+read(filename, type) -- if type is "binary" we read it in binary mode into a Uint8Array
+
+The basic process is:
+
+fopen
+fseek to the end of the file
+ftell to give the length of the file
+rewind back to the start of the file
+allocate an output buffer of the right size
+fread the file in to the buffer
+if we are in "binary" mode return the buffer as a Uint8Array
+else convert the buffer to a string and return that
+
+*/
+
 (function(){
-utils={};
+
+// Note this is assuming we are on Linux, we should check our OS and load the correct libc
 var c=ctypes.open("libc.so.6");
 
 // FILE * fopen ( const char * filename, const char * mode );
@@ -48,10 +112,8 @@ read=function(n,t){
   fseek(f,0,SEEK_END);
   var l=ftell(f);
   rewind(f);
-//  print(l.toString());
   l=parseInt(l.toString(),10);
   var b=new Uint8Array(l);
-//  print(b.length.toString());
   fread(b,1,l,f);
   fclose(f);
   if(t==="binary"){
@@ -63,7 +125,6 @@ read=function(n,t){
     o.push(String.fromCharCode(b[i]));
   }
   o=o.join("");
-//  print(o);
   return o;
 };
 
