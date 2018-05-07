@@ -105,6 +105,8 @@ load("load-wrap.js");
 
 load("./sdl.js");
 
+print("Note this will just segfault if it can't find the map files");
+
 width=640;
 
 height=480;
