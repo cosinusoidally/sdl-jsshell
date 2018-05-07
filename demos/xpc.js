@@ -75,8 +75,7 @@ var os = Components.classes["@mozilla.org/xre/app-info;1"].
 print("xpcshell detected OS: "+os);
 if(os==="Linux"){
   c=ctypes.open("libc.so.6");
-};
-if(os==="Windows"){
+} else if(os==="WINNT"){
   try {
     c=ctypes.open("msvcr120.dll");
   } catch(e){
@@ -85,7 +84,9 @@ if(os==="Windows"){
     print("and then put it somewhere we can find it");
     quit();
   }
-};
+} else {
+  print("Error do not recognise OS");
+}
 
 // FILE * fopen ( const char * filename, const char * mode );
 var fopen=c.declare("fopen",
