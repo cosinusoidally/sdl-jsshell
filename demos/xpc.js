@@ -70,8 +70,9 @@ else convert the buffer to a string and return that
 
 // We need to detect our OS and load the correct libc
 var c;
-var os = Components.classes["@mozilla.org/xre/app-info;1"].
-                 getService(Components.interfaces.nsIXULRuntime).OS;
+var sys = Components.classes["@mozilla.org/xre/app-info;1"].
+                 getService(Components.interfaces.nsIXULRuntime);
+var os = sys.OS;
 print("xpcshell detected OS: "+os);
 if(os==="Linux"){
   c=ctypes.open("libc.so.6");
