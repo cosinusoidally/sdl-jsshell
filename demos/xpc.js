@@ -67,8 +67,25 @@ else convert the buffer to a string and return that
 
 (function(){
 
-// Note this is assuming we are on Linux, we should check our OS and load the correct libc
-var c=ctypes.open("libc.so.6");
+
+// We need to detect our OS and load the correct libc
+var c;
+var os = Components.classes["@mozilla.org/xre/app-info;1"].
+                 getService(Components.interfaces.nsIXULRuntime).OS;
+print("xpcshell detected OS: "+os);
+if(os==="Linux"){
+  c=ctypes.open("libc.so.6");
+};
+if(os==="Windows"){
+  try {
+    c=ctypes.open("msvcr120.dll");
+  } catch(e){
+    print("Couldn't load msvcr120.dll");
+    print("You'll need to get msvcr120.dll from jsshell 45");
+    print("and then put it somewhere we can find it");
+    quit();
+  }
+};
 
 // FILE * fopen ( const char * filename, const char * mode );
 var fopen=c.declare("fopen",
