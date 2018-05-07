@@ -20,13 +20,16 @@ see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=848190). Mozilla also do
 not ship official ARM versions of jsshell (or Firefox for that matter, but
 distros *do* ship up to date ARM versions of Firefox).
 
-This file has to do 2 things:
+This file has to do 3 things:
 
 * load the js-ctypes module
 
 * polyfill the jsshell "read" function, since xpcshell doesn't have it built in
   (you can probably polyfill with some XPCOM API, but I've just used fopen,
   fread, etc, from libc)
+
+* load the demo specified by the exe variable (which gets filled in by
+  run-in-firefox.sh)
 
 [1] Note this also works on Windows, but for some reason it doesn't seem to
 work through cmd.exe. The work around I found was to run Firefox through the
@@ -129,4 +132,6 @@ read=function(n,t){
 };
 
 })();
+
+// Actually load our demo
 load(exe);
